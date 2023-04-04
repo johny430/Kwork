@@ -1,16 +1,57 @@
-# This is a sample Python script.
+import sqlite3
+import http.client
+import json
+import aiogram.utils.markdown as md
+from aiogram import Bot, Dispatcher, types
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters import Text
+from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.types import ParseMode
+from aiogram.utils import executor
+from aiogram.types import *
+from db import BotDB
+from config import *
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+# инициализация базы данных
+BotDB = BotDB("Kworkk.db")
+conn = sqlite3.connect('Kworkk.db')
+cursor = conn.cursor()
+
+# создание объектов бота и диспетчера
+bot = Bot(token=Token)
+storage = MemoryStorage()
+dp = Dispatcher(bot,storage=storage)
+
+# обработчики команд
+@dp.message_handler(commands=['start'])
+async def start(message: types.Message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    item1 = types.KeyboardButton("Зарегистрироваться как заказчик")
+    item2 = types.KeyboardButton("Зарегистрироваться как исполнитель")
+    markup.add(item1, item2)
+    await message.answer("Здравствуйте, выберите тип регистрации",reply_markup=markup)
+
+#Создание классов для фиксации состояний
+class Executor(StatesGroup):
+    INN = State()
+    Profile = State()
+
+class Customer(StatesGroup):
+    INN = State()
+    Profile = State()
+@dp.message_handler(Text(equals="Зарегистрироваться как исполнитель"))
+async def executor(message: types.Message):
+    await message.answer("Введите ваш ИНН для проверки")
+    # if (not BotDB.executor_exists(message.from_user.id)):
+    #     BotDB.add_executor(message.from_user.id)
+
+@dp.message_handler(commands=['help'])
+async def help(message: types.Message):
+    await message.answer(
+        "Список доступных команд:")
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    executor.start_polling(dp, skip_updates=True)
