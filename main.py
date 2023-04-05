@@ -22,7 +22,7 @@ from general import *
 # обработчики команд
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
-    if BotDB.executor_exists(message.from_user.id):
+    if BotDB.user_exists(message.from_user.id):
         await bot.send_message(message.chat.id, "Ваш профиль хуеосос!")
     else:
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)

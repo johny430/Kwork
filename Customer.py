@@ -62,14 +62,14 @@ async def Customer4(message: types.Message, state: FSMContext):
             last_name = data_storage["last_name"]
             surname = data_storage["surname"]
             inn = data_storage["inn"]
-            BotDB.add_Customer(int(inn), str(first_name), str(last_name), str(surname), str(message.text),
+            BotDB.add_user(int(inn), str(first_name), str(last_name), str(surname), str(message.text),
                                int(message.from_user.id))
             await state.finish()
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            item1 = types.KeyboardButton("Перейти в меню",reply_markup=markup)
+            item1 = types.KeyboardButton("Перейти в меню заказчика")
             markup.add(item1)
             profile = f'{last_name}\n{first_name}\n{surname}\n{inn}\n{message.text}'
-            await bot.send_message(message.chat.id, "Регистрация прошла успешно!\nВаши данные:\n" + profile,)
+            await bot.send_message(message.chat.id, "Регистрация прошла успешно!\nВаши данные:\n" + profile, reply_markup=markup)
     else:
         await bot.send_message(message.chat.id, "Введите корректную дату рождения в формате чч.мм.гг")
 
