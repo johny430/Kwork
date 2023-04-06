@@ -19,6 +19,7 @@ dp = Dispatcher(bot, storage=storage)
 
 from general import *
 from Registration import *
+from AddOrder import *
 
 
 @dp.message_handler(commands=['help'])

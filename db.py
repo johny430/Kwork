@@ -24,3 +24,10 @@ class BotDB:
             "INSERT INTO account (birth_date,surname,last_name,first_name,inn,user_id,type_of_account ) VALUES(?,?,?,?,?,?,?);",
             (birth_date, surname, last_name, first_name, int(user_id), tg_user_id, account_type))
         return self.conn.commit()
+
+    def add_order(self, name, price, description, customer_id):
+        """Добавляем заказ в базу"""
+        self.cursor.execute(
+            "insert into orders (oder_name, order_price, order_description, customer_id) values (?,?,?,?);",
+            (name,price,description,customer_id))
+        return self.conn.commit()

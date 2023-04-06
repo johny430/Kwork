@@ -22,3 +22,7 @@ balance_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 add_balance = types.KeyboardButton("Пополнить баланс")
 back = types.KeyboardButton("Назад")
 balance_markup.add(add_balance, back)
+
+back_cancel_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+cancel = types.KeyboardButton("Отмена")
+back_cancel_markup.add(back, cancel)
