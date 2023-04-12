@@ -19,6 +19,8 @@ dp = Dispatcher(bot, storage=storage)
 
 from general import *
 from GetProfile import *
+from GetOrderReviews import *
+from Registration import *
 
 
 @dp.message_handler(commands=['help'])

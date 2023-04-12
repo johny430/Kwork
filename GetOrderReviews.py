@@ -20,11 +20,17 @@ class GetOrderReviewsForm(StatesGroup):
 # handler для создания заказа
 @dp.message_handler(Text(equals="Посмотреть отклики на заказ"))
 async def order_place(message: types.Message):
-    await bot.send_message(message.chat.id, "Введите название заказа:", reply_markup=back_cancel_markup)
+    results = BotDB.get_orders()
+    message_text = 'Список доступных Заказов:\n'
+    for result in results:
+        id = str(result[0])
+        price = str(result[2])
+        message_text += f'Номер: {id}. {result[1]}\n Цена: {price}\n Описание: {result[3]}\n'
+    await bot.send_message(message.chat.id, message_text, reply_markup=back_cancel_markup)
+    await bot.send_message(message.chat.id, "Введите номер заказа:", reply_markup=back_cancel_markup)
     await GetOrderReviewsForm.ReviewSelect.set()
 
 
-# handler который принимает имя заказа
 @dp.message_handler(state=GetOrderReviewsForm.ReviewSelect)
 async def order_place_name(message: types.Message, state: FSMContext):
     if message.text == "Назад":
@@ -35,8 +41,12 @@ async def order_place_name(message: types.Message, state: FSMContext):
         await state.finish()
     elif message.text.isdigit():
         async with state.proxy() as data_storage:
-            data_storage["price"] = int(message.text)
-        await bot.send_message(message.chat.id, "Введите описание заказа:", reply_markup=back_cancel_markup)
+            data_storage["id"] = int(message.text)
+        reviews = BotDB.get_orders_reviews(order_id=1)
+        message_text = ''
+        for review in reviews:
+           message_text += f'Номер: {review[0]}\nОписание: {review[2]}\n\n'
+        await bot.send_message(message.chat.id, "Выберите понравившийся отклик:\n" + message_text, reply_markup=back_cancel_markup)
         await GetOrderReviewsForm.Description.set()
     else:
         await bot.send_message(message.chat.id, "Введите корректное число!:", reply_markup=back_cancel_markup)

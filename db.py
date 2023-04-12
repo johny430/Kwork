@@ -74,3 +74,8 @@ class BotDB:
         self.cursor.execute("insert into tz (profile_id, tz, customer_id) values (?,?,?);",
                             (profile_id, tz, customer_id))
         return self.conn.commit()
+
+    def get_orders_reviews(self, order_id):
+        """Получаем профили из базы"""
+        results = self.cursor.execute("SELECT * FROM Customer_review where order_id = ?", (order_id,))
+        return results.fetchall()
