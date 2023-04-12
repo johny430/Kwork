@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="dataSourceStorageLocal" created-in="PY-212.5284.44">
-    <data-source name="Kworkk" uuid="51faf9cd-6b63-41b7-b8a0-bd72996744e0">
+  <component name="dataSourceStorageLocal" created-in="PY-231.8109.197">
+    <data-source name="Kworkk.db" uuid="2dcfaff7-e01e-4e29-9684-debce23c80cf">
       <database-info product="SQLite" version="3.40.1" jdbc-version="4.2" driver-name="SQLite JDBC" driver-version="3.40.1.0" dbms="SQLITE" exact-version="3.40.1" exact-driver-version="3.40">
         <identifier-quote-string>&quot;</identifier-quote-string>
       </database-info>
       <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed" />
+      <secret-storage>master_key</secret-storage>
       <auth-provider>no-auth</auth-provider>
       <schema-mapping>
         <introspection-scope>

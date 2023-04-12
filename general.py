@@ -21,6 +21,5 @@ async def menu_customer(message: types.Message):
 
 @dp.message_handler(Text(equals="Баланс"))
 async def balance(message: types.Message):
-    user_id = message.chat.id
-    balance = BotDB.get_balance(user_id)
-    await bot.send_message(message.chat.id, 'Ваш балланс = ' + str(balance) + " Баллов", reply_markup=balance_markup)
+    money = BotDB.get_balance(user_id=message.from_user.id)
+    await bot.send_message(message.chat.id, 'Ваш балланс = ' + str(money) + " Баллов", reply_markup=balance_markup)

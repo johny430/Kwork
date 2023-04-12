@@ -28,7 +28,7 @@ class Executor(StatesGroup):
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
     if BotDB.user_exists(message.from_user.id):
-        await bot.send_message(message.chat.id, "Ваш профиль хуеосос!", reply_markup=customer_menu_markup)
+        await bot.send_message(message.chat.id, "Выберите пункт меню", reply_markup=customer_menu_markup)
     else:
         await Executor.Type.set()
         await message.answer("Здравствуйте, выберите тип регистрации", reply_markup=registration_markup)

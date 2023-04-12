@@ -18,8 +18,7 @@ storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 
 from general import *
-from Registration import *
-from AddOrder import *
+from GetProfile import *
 
 
 @dp.message_handler(commands=['help'])
