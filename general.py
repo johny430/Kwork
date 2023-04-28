@@ -4,7 +4,7 @@ from aiogram.dispatcher.filters import Text
 from Markups import balance_markup
 from Markups import customer_menu_markup
 from Markups import executor_menu_markup
-from main import BotDB
+from main import Database
 from main import bot
 from main import dp
 

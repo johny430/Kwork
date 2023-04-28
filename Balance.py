@@ -44,12 +44,8 @@ async def process_name(message: types.Message, state: FSMContext):
     if message.text == "Отмена":
         user_id = message.chat.id
         balance = Database.get_balance(user_id)
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        item1 = types.KeyboardButton("Пополнить баланс (USDT)")
-        back = types.KeyboardButton("Назад")
-        markup.add(item1,back)
-        await bot.send_message(message.chat.id, 'Ваш балланс = ' + str(balance) + ' USDT', reply_markup=markup)
-        await state.finish()
+        await bot.send_message(message.chat.id, 'Ваш балланс = ' + str(balance) + ' USDT', reply_markup=balance_markup)
+        await BalanceForm.Check.set()
     elif message.text.isdigit():
         conn = http.client.HTTPSConnection("api.commerce.coinbase.com")
         payload = json.dumps({
@@ -96,8 +92,8 @@ async def process_name2(message: types.Message,state: FSMContext):
         item2 = types.KeyboardButton("Проверить оплату")
         markup.add(item1,item2)
         if message.text == "Отмена":
+            await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
             await state.finish()
-
         else:
             conn = http.client.HTTPSConnection("api.commerce.coinbase.com")
             payload = ''
