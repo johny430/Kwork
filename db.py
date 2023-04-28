@@ -79,3 +79,8 @@ class BotDB:
         """Получаем профили из базы"""
         results = self.cursor.execute("SELECT * FROM Customer_review where order_id = ?", (order_id,))
         return results.fetchall()
+
+    def update_balance(self, user_id, upd_balance):
+        """Заменяем значение балланса"""
+        self.cursor.execute("UPDATE account SET balance = (?) WHERE user_id = (?) ",(upd_balance,user_id))
+        return self.conn.commit()
