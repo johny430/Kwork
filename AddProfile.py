@@ -5,7 +5,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from Markups import back_cancel_markup
 from Markups import executor_menu_markup
-from main import BotDB
+from main import Database
 from main import bot
 from main import dp
 
@@ -76,5 +76,5 @@ async def order_place_name(message: types.Message, state: FSMContext):
             message_text = f"Ваша специальность: {speciality}\nВаша почасовая ставка: {price} Рублей\nВаш релевантный опыт: {description}"
             await bot.send_message(message.chat.id, "Ваш профиль успешно создан!\nСодержание:\n" + message_text)
             await bot.send_message(message.chat.id, "Меню", reply_markup=executor_menu_markup)
-            BotDB.add_profile(message.from_user.id, speciality, price, description)
+            Database.add_profile(message.from_user.id, speciality, price, description)
             await state.finish()

@@ -2,10 +2,11 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.types import ContentTypes
 
 from Markups import back_cancel_markup
 from Markups import customer_menu_markup
-from main import BotDB
+from main import Database
 from main import bot
 from main import dp
 
@@ -15,6 +16,7 @@ class OrderForm(StatesGroup):
     Name = State()
     Price = State()
     Description = State()
+    TechnicalTask = State()
 
 
 # handler для создания заказа
@@ -69,11 +71,39 @@ async def order_place_name(message: types.Message, state: FSMContext):
         await state.finish()
     else:
         async with state.proxy() as data_storage:
+        #     name = data_storage["name"]
+        #     price = data_storage["price"]
+        #     description = message.text
+        #     message_text = f"Название: {name}\nЦена: {price} Рублей\nОписание:{description}"
+        #     await bot.send_message(message.chat.id, "Заказ успешно добавлен!\nДанные закаказа:" + message_text)
+        #     await bot.send_message(message.chat.id, "Меню", reply_markup=customer_menu_markup)
+        #     Database.add_order(name, price, description, message.from_user.id)
+        #     await state.finish()
+            data_storage["description"] = message.text
+        await message.answer("Введите тз в виде файла:")
+        await OrderForm.TechnicalTask.set()
+
+
+@dp.message_handler(content_types=ContentTypes.DOCUMENT)
+async def order_place_name(message: types.Message, state: FSMContext):
+    if message.text == "Назад":
+        await bot.send_message(message.chat.id, "Введите описание заказа:", reply_markup=back_cancel_markup)
+        await OrderForm.Description.set()
+    elif message.text == "Отмена":
+        await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
+        await state.finish()
+    elif message.document:
+        print("sad")
+        proxy = await state.proxy()
+        async with state.proxy() as data_storage:
             name = data_storage["name"]
             price = data_storage["price"]
             description = message.text
             message_text = f"Название: {name}\nЦена: {price} Рублей\nОписание:{description}"
             await bot.send_message(message.chat.id, "Заказ успешно добавлен!\nДанные закаказа:" + message_text)
             await bot.send_message(message.chat.id, "Меню", reply_markup=customer_menu_markup)
-            BotDB.add_order(name, price, description, message.from_user.id)
+            Database.add_order(name, price, description, message.from_user.id)
             await state.finish()
+    else:
+        await message.answer("Отправьте тз файлом!!!")
+

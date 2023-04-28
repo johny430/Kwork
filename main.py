@@ -8,9 +8,7 @@ from config import *
 from db import BotDB
 
 # инициализация базы данных
-BotDB = BotDB("Kworkk.db")
-conn = sqlite3.connect('Kworkk.db')
-cursor = conn.cursor()
+Database = BotDB("Kworkk.db")
 
 # создание объектов бота и диспетчера
 bot = Bot(token=Token)
@@ -21,6 +19,8 @@ from general import *
 from GetProfile import *
 from GetOrderReviews import *
 from Registration import *
+from Balance import *
+from AddOrder import *
 
 
 @dp.message_handler(commands=['help'])

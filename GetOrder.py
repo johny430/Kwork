@@ -5,7 +5,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from Markups import back_cancel_markup
 from Markups import executor_menu_markup
-from main import BotDB
+from main import Database
 from main import bot
 from main import dp
 
@@ -19,7 +19,7 @@ class GetOrderForm(StatesGroup):
 
 @dp.message_handler(Text(equals="Поиск заказов"))
 async def Search_orders(message: types.Message):
-    results = BotDB.get_orders()
+    results = Database.get_orders()
     message_text = 'Список доступных Заказов:\n'
     for result in results:
         id = str(result[0])
@@ -40,7 +40,7 @@ async def CL(message: types.Message, state: FSMContext):
         await state.finish()
     elif message.text.isdigit():
         id = int(message.text)
-        order = BotDB.get_order_id(id)
+        order = Database.get_order_id(id)
         if order == None:
             await bot.send_message(message.chat.id, "Такого заказа не существует. Введите корректное значение!")
         else:
@@ -68,5 +68,5 @@ async def Mailing(message: types.Message, state: FSMContext):
             message_text = f"Ваше сопроводительное письмо успешно отправлено: \n{CoverLetter}"
             await bot.send_message(message.chat.id, message_text)
             await bot.send_message(message.chat.id, "Меню", reply_markup=executor_menu_markup)
-            BotDB.add_CoverLetter(id, CoverLetter, message.from_user.id)
+            Database.add_CoverLetter(id, CoverLetter, message.from_user.id)
             await state.finish()

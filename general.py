@@ -17,9 +17,3 @@ async def menu_executor(message: types.Message):
 @dp.message_handler(Text(equals="Перейти в меню заказчика"))
 async def menu_customer(message: types.Message):
     await bot.send_message(message.chat.id, "Меню", reply_markup=customer_menu_markup)
-
-
-@dp.message_handler(Text(equals="Баланс"))
-async def balance(message: types.Message):
-    money = BotDB.get_balance(user_id=message.from_user.id)
-    await bot.send_message(message.chat.id, 'Ваш балланс = ' + str(money) + " Баллов", reply_markup=balance_markup)

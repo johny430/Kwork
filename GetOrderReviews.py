@@ -5,7 +5,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from Markups import back_cancel_markup
 from Markups import customer_menu_markup
-from main import BotDB
+from main import Database
 from main import bot
 from main import dp
 
@@ -20,7 +20,7 @@ class GetOrderReviewsForm(StatesGroup):
 # handler для создания заказа
 @dp.message_handler(Text(equals="Посмотреть отклики на заказ"))
 async def order_place(message: types.Message):
-    results = BotDB.get_orders()
+    results = Database.get_orders()
     message_text = 'Список доступных Заказов:\n'
     for result in results:
         id = str(result[0])
@@ -42,7 +42,7 @@ async def order_place_name(message: types.Message, state: FSMContext):
     elif message.text.isdigit():
         async with state.proxy() as data_storage:
             data_storage["id"] = int(message.text)
-        reviews = BotDB.get_orders_reviews(order_id=1)
+        reviews = Database.get_orders_reviews(order_id=1)
         message_text = ''
         for review in reviews:
            message_text += f'Номер: {review[0]}\nОписание: {review[2]}\n\n'
@@ -87,5 +87,5 @@ async def order_place_name(message: types.Message, state: FSMContext):
 #             message_text = f"Название: {name}\nЦена: {price} Рублей\nОписание:{description}"
 #             await bot.send_message(message.chat.id, "Заказ успешно добавлен!\nДанные закаказа:" + message_text)
 #             await bot.send_message(message.chat.id, "Меню", reply_markup=customer_menu_markup)
-#             BotDB.add_order(name, price, description, message.from_user.id)
+#             Database.add_order(name, price, description, message.from_user.id)
 #             await state.finish()

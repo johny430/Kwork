@@ -8,7 +8,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from Markups import customer_menu_markup
 from Markups import executor_menu_markup
 from Markups import registration_markup
-from main import BotDB
+from main import Database
 from main import bot
 from main import dp
 
@@ -27,7 +27,7 @@ class Executor(StatesGroup):
 
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
-    if BotDB.user_exists(message.from_user.id):
+    if Database.user_exists(message.from_user.id):
         await bot.send_message(message.chat.id, "Выберите пункт меню", reply_markup=customer_menu_markup)
     else:
         await Executor.Type.set()
@@ -97,7 +97,7 @@ async def executor4(message: types.Message, state: FSMContext):
             inn = data_storage["inn"]
             account_type = data_storage["type"]
             markup = executor_menu_markup if account_type == RegistrationType.as_executor else customer_menu_markup
-            BotDB.add_user(int(inn), str(first_name), str(last_name), str(surname), str(message.text),
+            Database.add_user(int(inn), str(first_name), str(last_name), str(surname), str(message.text),
                            int(message.from_user.id), int(account_type))
             await state.finish()
             profile = f'{last_name}\n{first_name}\n{surname}\n{inn}\n{message.text}'

@@ -5,7 +5,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from Markups import back_cancel_markup
 from Markups import customer_menu_markup
-from main import BotDB
+from main import Database
 from main import bot
 from main import dp
 
@@ -19,7 +19,7 @@ class GetProfileForm(StatesGroup):
 
 @dp.message_handler(Text(equals="Поиск исполнителей"))
 async def Search_profile(message: types.Message):
-    results = BotDB.get_profile()
+    results = Database.get_profile()
     message_text = 'Список доступных исполнителей:\n'
     for result in results:
         id = str(result[0])
@@ -40,7 +40,7 @@ async def CoverLet(message: types.Message, state: FSMContext):
         await state.finish()
     elif message.text.isdigit():
         id = int(message.text)
-        order = BotDB.get_profile_id(id)
+        order = Database.get_profile_id(id)
         if order == None:
             await bot.send_message(message.chat.id, "Такого исполнителя не существует. Введите корректное значение!")
         else:
@@ -68,5 +68,5 @@ async def Mailing_cust(message: types.Message, state: FSMContext):
             message_text = f"Ваш запрос успешно отправлен исполнителю: \n{TZ}"
             await bot.send_message(message.chat.id, message_text)
             await bot.send_message(message.chat.id, "Меню", reply_markup=customer_menu_markup)
-            BotDB.add_TZ(id, TZ, message.from_user.id)
+            Database.add_TZ(id, TZ, message.from_user.id)
             await state.finish()
