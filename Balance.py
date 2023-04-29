@@ -6,11 +6,10 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import StatesGroup, State
 
+from config import API_TOKEN
 from Markups import amount_balance
 from Markups import balance_markup
-from Markups import confirm_payment_markup
 from Markups import customer_menu_markup
-from config import API_TOKEN
 from main import Database
 from main import bot
 from main import dp
@@ -41,7 +40,6 @@ async def change_balance(message: types.Message, state: FSMContext):
         await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
         await state.finish()
 
-
 @dp.message_handler(state=BalanceForm.Amount)
 async def process_name(message: types.Message, state: FSMContext):
     if message.text == "Отмена":
@@ -52,13 +50,13 @@ async def process_name(message: types.Message, state: FSMContext):
     elif message.text.isdigit():
         conn = http.client.HTTPSConnection("api.commerce.coinbase.com")
         payload = json.dumps({
-            "name": "Пополнение балланса",
-            "description": "FreelanceHub",
-            "pricing_type": "fixed_price",
-            "local_price": {
-                "amount": message.text,
-                "currency": "usdt"
-            }
+        "name": "Пополнение балланса",
+                "description": "FreelanceHub",
+        "pricing_type": "fixed_price",
+        "local_price": {
+            "amount": message.text,
+            "currency": "usdt"
+        }
         })
         headers = {
             'Content-Type': 'application/json',
@@ -79,16 +77,21 @@ async def process_name(message: types.Message, state: FSMContext):
             data_storage['address'] = address
             data_storage["id"] = id
         await BalanceForm.Confirm.set()
-        await bot.send_message(message.chat.id,
-                               "Перечислите " + message.text + "usdt на адресс " + address + "\nИли оплатите по ссылке: " + url,
-                               reply_markup=confirm_payment_markup)
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        approve = types.KeyboardButton("Подтвердить оплату")
+        back = types.KeyboardButton("Отмена")
+        markup.add(back,approve)
+        await bot.send_message(message.chat.id, "Перечислите " + message.text + "usdt на адресс " + address + "\nИли оплатите по ссылке: " + url, reply_markup=markup)
     else:
         await bot.send_message(message.chat.id, 'Введите целое число!')
 
-
 @dp.message_handler(state=BalanceForm.Confirm)
-async def process_name2(message: types.Message, state: FSMContext):
+async def process_name2(message: types.Message,state: FSMContext):
     async with state.proxy() as data_storage:
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton("Отмена")
+        item2 = types.KeyboardButton("Проверить оплату")
+        markup.add(item1,item2)
         if message.text == "Отмена":
             await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
             await state.finish()
@@ -106,18 +109,16 @@ async def process_name2(message: types.Message, state: FSMContext):
             print(data.decode("utf-8"))
             data = json.loads(data)
             status = data["data"]["timeline"][-1]["status"]
-            if status == "REFUND":
-                # оплачено успешно
-                # amount - количество usdt на которое успешно пополнили баланс
+            if status == "REFOUNDED":
+                #оплачено успешно
+                #amount - количество usdt на которое успешно пополнили баланс
                 amount = data_storage['amount']
-                await state.reset_state(with_data=False)
-                await bot.send_message(message.chat.id, "Оплачено успешно!", reply_markup=customer_menu_markup)
+                await state.reset_state (with_data = False)
+                await bot.send_message(message.chat.id, "Оплачено успешно!",reply_markup=customer_menu_markup)
                 # пополняем баланс на amount usdt
                 user_id = message.chat.id
                 upd_balance = Database.get_balance(user_id) + amount
                 Database.update_balance(user_id, upd_balance)
                 await state.finish()
             else:
-                await bot.send_message(message.chat.id,
-                                       "Оплата пока не найдена. Возвожно она не прошла проверку сетью.Попробуйте позже!",
-                                       reply_markup=confirm_payment_markup)
+                await bot.send_message(message.chat.id, "Оплата пока не найдена. Возвожно она не прошла проверку сетью.Попробуйте позже!")

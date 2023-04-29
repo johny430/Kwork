@@ -17,12 +17,11 @@ class BotDB:
         result = self.cursor.execute("select balance from account where user_id = (?)", (user_id,))
         return result.fetchone()[0]
 
-    def add_user(self, user_id: int, first_name: str, last_name: str, surname: str, birth_date: str, tg_user_id: int,
-                 account_type: int):
+    def add_user(self, user_id: int, account_type: int):
         """Добавляем юзера в базу"""
         self.cursor.execute(
-            "INSERT INTO account (birth_date,surname,last_name,first_name,inn,user_id,type_of_account ) VALUES(?,?,?,?,?,?,?);",
-            (birth_date, surname, last_name, first_name, int(user_id), tg_user_id, account_type))
+            "INSERT INTO account (user_id,type_of_account ) VALUES(?,?);",
+            (int(user_id), account_type))
         return self.conn.commit()
 
     def add_order(self, name, price, description, customer_id, tz_file_id):

@@ -1,5 +1,5 @@
 # Токен бота
-Token = "6223131726:AAE58ZxlD0kJQ7JwQzn7KomLGKbr_8asrZE"
+Token = "5569661722:AAHRgLf9iGOHRLgp9djaMBTtdQrPC_1b1yU"
 # API Coinbase
 API_TOKEN = "5b9167f5-4503-4cdd-9f30-749c61a40770"
 # Telethon account

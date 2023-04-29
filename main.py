@@ -17,6 +17,7 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 
 from general import *
 from GetProfile import *
+from GetOrder import *
 from GetOrderReviews import *
 from Registration import *
 from Balance import *
