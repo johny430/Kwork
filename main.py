@@ -1,24 +1,19 @@
 import asyncio
-import os
-import sqlite3
 
-from telethon import events
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from aiogram.utils import executor
+from telethon import events
 
 from SupportClientChat import SupportClientChat
 from config import *
 from db import BotDB
 
-Chat = SupportClientChat(app_id=api_id, app_hash=api_hash)
+Chat = SupportClientChat(api_id, api_hash)
 # инициализация базы данных
 Database = BotDB("Kworkk.db")
-
 # создание объектов бота и диспетчера
 bot = Bot(token=Token)
-storage = MemoryStorage()
-dp = Dispatcher(bot, storage=storage)
+dp = Dispatcher(bot, storage=MemoryStorage())
 
 from general import *
 from GetProfile import *
@@ -38,7 +33,7 @@ async def my_event_handler(event):
 
 
 async def main():
-    #await Chat.client_start()
+    await Chat.client_start()
     await dp.start_polling(bot)
 
 

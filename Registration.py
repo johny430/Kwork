@@ -98,7 +98,7 @@ async def executor4(message: types.Message, state: FSMContext):
             account_type = data_storage["type"]
             markup = executor_menu_markup if account_type == RegistrationType.as_executor else customer_menu_markup
             Database.add_user(int(inn), str(first_name), str(last_name), str(surname), str(message.text),
-                           int(message.from_user.id), int(account_type))
+                              int(message.from_user.id), int(account_type))
             await state.finish()
             profile = f'{last_name}\n{first_name}\n{surname}\n{inn}\n{message.text}'
             await bot.send_message(message.chat.id, "Регистрация прошла успешно!\nВаши данные:\n" + profile,

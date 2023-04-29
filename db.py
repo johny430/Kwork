@@ -25,11 +25,11 @@ class BotDB:
             (birth_date, surname, last_name, first_name, int(user_id), tg_user_id, account_type))
         return self.conn.commit()
 
-    def add_order(self, name, price, description, customer_id):
+    def add_order(self, name, price, description, customer_id, tz_file_id):
         """Добавляем заказ в базу"""
         self.cursor.execute(
-            "insert into orders (oder_name, order_price, order_description, customer_id) values (?,?,?,?);",
-            (name, price, description, customer_id))
+            "insert into orders (oder_name, order_price, order_description, customer_id,tz_file_id) values (?,?,?,?,?);",
+            (name, price, description, customer_id, tz_file_id))
         return self.conn.commit()
 
     def add_profile(self, user_id, speciality, price, description):
@@ -82,5 +82,5 @@ class BotDB:
 
     def update_balance(self, user_id, upd_balance):
         """Заменяем значение балланса"""
-        self.cursor.execute("UPDATE account SET balance = (?) WHERE user_id = (?) ",(upd_balance,user_id))
+        self.cursor.execute("UPDATE account SET balance = (?) WHERE user_id = (?) ", (upd_balance, user_id))
         return self.conn.commit()

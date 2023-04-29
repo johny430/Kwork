@@ -45,8 +45,9 @@ async def order_place_name(message: types.Message, state: FSMContext):
         reviews = Database.get_orders_reviews(order_id=1)
         message_text = ''
         for review in reviews:
-           message_text += f'Номер: {review[0]}\nОписание: {review[2]}\n\n'
-        await bot.send_message(message.chat.id, "Выберите понравившийся отклик:\n" + message_text, reply_markup=back_cancel_markup)
+            message_text += f'Номер: {review[0]}\nОписание: {review[2]}\n\n'
+        await bot.send_message(message.chat.id, "Выберите понравившийся отклик:\n" + message_text,
+                               reply_markup=back_cancel_markup)
         await GetOrderReviewsForm.Description.set()
     else:
         await bot.send_message(message.chat.id, "Введите корректное число!:", reply_markup=back_cancel_markup)

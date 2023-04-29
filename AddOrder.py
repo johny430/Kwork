@@ -71,20 +71,12 @@ async def order_place_name(message: types.Message, state: FSMContext):
         await state.finish()
     else:
         async with state.proxy() as data_storage:
-        #     name = data_storage["name"]
-        #     price = data_storage["price"]
-        #     description = message.text
-        #     message_text = f"Название: {name}\nЦена: {price} Рублей\nОписание:{description}"
-        #     await bot.send_message(message.chat.id, "Заказ успешно добавлен!\nДанные закаказа:" + message_text)
-        #     await bot.send_message(message.chat.id, "Меню", reply_markup=customer_menu_markup)
-        #     Database.add_order(name, price, description, message.from_user.id)
-        #     await state.finish()
             data_storage["description"] = message.text
-        await message.answer("Введите тз в виде файла:")
+        await message.answer("Введите тз в виде файла:", reply_markup=back_cancel_markup)
         await OrderForm.TechnicalTask.set()
 
 
-@dp.message_handler(content_types=ContentTypes.DOCUMENT)
+@dp.message_handler(content_types=ContentTypes.ANY, state=OrderForm.TechnicalTask)
 async def order_place_name(message: types.Message, state: FSMContext):
     if message.text == "Назад":
         await bot.send_message(message.chat.id, "Введите описание заказа:", reply_markup=back_cancel_markup)
@@ -93,17 +85,19 @@ async def order_place_name(message: types.Message, state: FSMContext):
         await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
         await state.finish()
     elif message.document:
-        print("sad")
-        proxy = await state.proxy()
-        async with state.proxy() as data_storage:
-            name = data_storage["name"]
-            price = data_storage["price"]
-            description = message.text
-            message_text = f"Название: {name}\nЦена: {price} Рублей\nОписание:{description}"
-            await bot.send_message(message.chat.id, "Заказ успешно добавлен!\nДанные закаказа:" + message_text)
-            await bot.send_message(message.chat.id, "Меню", reply_markup=customer_menu_markup)
-            Database.add_order(name, price, description, message.from_user.id)
-            await state.finish()
+        tz_filename = message.document.file_name
+        if tz_filename.endswith(".txt") or tz_filename.endswith(".doc") or tz_filename.endswith(".docx"):
+            async with state.proxy() as data_storage:
+                name = data_storage["name"]
+                price = data_storage["price"]
+                description = data_storage["description"]
+                file_id = message.document.file_id
+                message_text = f"Название: {name}\nЦена: {price} Рублей\nОписание:{description}\nФайл с тз: {tz_filename}"
+                await bot.send_message(message.chat.id, "Заказ успешно добавлен!\nДанные закаказа:" + message_text)
+                await bot.send_message(message.chat.id, "Меню", reply_markup=customer_menu_markup)
+                Database.add_order(name, price, description, message.from_user.id, file_id)
+                await state.finish()
+        else:
+            await message.answer("Принимаемые форматы файлов: doc, docx, txt!!!")
     else:
         await message.answer("Отправьте тз файлом!!!")
-

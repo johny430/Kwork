@@ -41,3 +41,7 @@ item50 = types.KeyboardButton("50")
 item100 = types.KeyboardButton("100")
 cancel = types.KeyboardButton("Отмена")
 amount_balance.add(item5, item10, item25, item50, item100, cancel)
+
+confirm_payment_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+confirm_payment = types.KeyboardButton("Проверить оплату")
+confirm_payment_markup.add(cancel, confirm_payment)
