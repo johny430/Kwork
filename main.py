@@ -21,12 +21,12 @@ from GetOrder import *
 from GetOrderReviews import *
 from Registration import *
 from Balance import *
+from AddProfile import *
 from AddOrder import *
 
 @dp.message_handler(commands=['help'])
 async def help(message: types.Message):
     await message.answer("Список доступных команд:")
-
 
 @Chat.client.on(events.NewMessage)
 async def my_event_handler(event):

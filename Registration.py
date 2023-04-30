@@ -1,13 +1,9 @@
 import enum
 
-import requests
 from aiogram import types
-from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from Markups import customer_menu_markup
-from Markups import executor_menu_markup
-from Markups import registration_markup
 from main import Database
 from main import bot
 from main import dp

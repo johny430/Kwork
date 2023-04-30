@@ -6,7 +6,6 @@ from Markups import executor_menu_markup
 from main import bot
 from main import dp
 
-
 @dp.message_handler(Text(equals="Перейти в меню исполнителя"))
 async def menu_executor(message: types.Message):
     await bot.send_message(message.chat.id, "Меню", reply_markup=executor_menu_markup)

@@ -72,11 +72,11 @@ async def order_place_name(message: types.Message, state: FSMContext):
     else:
         async with state.proxy() as data_storage:
             data_storage["description"] = message.text
-        await message.answer("Введите тз в виде файла:", reply_markup=back_cancel_markup)
+        await message.answer("Сбросьте тз в виде файла:", reply_markup=back_cancel_markup)
         await OrderForm.TechnicalTask.set()
 
 
-@dp.message_handler(content_types=ContentTypes.ANY, state=OrderForm.TechnicalTask)
+@dp.message_handler(state=OrderForm.TechnicalTask, content_types=ContentTypes.ANY)
 async def order_place_name(message: types.Message, state: FSMContext):
     if message.text == "Назад":
         await bot.send_message(message.chat.id, "Введите описание заказа:", reply_markup=back_cancel_markup)
