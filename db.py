@@ -24,11 +24,18 @@ class BotDB:
             (int(user_id), account_type))
         return self.conn.commit()
 
-    def add_order(self, name, price, description, customer_id, tz_file_id):
+    def add_order(self, name, price, category, description, customer_id):
         """Добавляем заказ в базу"""
         self.cursor.execute(
-            "insert into orders (oder_name, order_price, order_description, customer_id,tz_file_id) values (?,?,?,?,?);",
-            (name, price, description, customer_id, tz_file_id))
+            "insert into orders (oder_name, order_price, order_category, order_description, customer_id) values (?,?,?,?,?);",
+            (name, price, category, description, customer_id))
+        return self.conn.commit()
+
+    def add_order_tz(self, name, price, category, description, customer_id, tz_file_id):
+        """Добавляем заказ в базу"""
+        self.cursor.execute(
+            "insert into orders (oder_name, order_price, order_category, order_description, customer_id,tz_file_id) values (?,?,?,?,?,?);",
+            (name, price, category, description, customer_id, tz_file_id))
         return self.conn.commit()
 
     def add_profile(self, user_id, speciality, price, description):

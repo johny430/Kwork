@@ -24,7 +24,7 @@ class BalanceForm(StatesGroup):
 @dp.message_handler(Text(equals="Баланс"))
 async def check_balance(message: types.Message):
     money = Database.get_balance(user_id=message.from_user.id)
-    await bot.send_message(message.chat.id, 'Ваш балланс = ' + str(money) + " Баллов", reply_markup=balance_markup)
+    await bot.send_message(message.chat.id, 'Ваш балланс = ' + str(money) + " USDT", reply_markup=balance_markup)
     await BalanceForm.Check.set()
 
 
@@ -81,7 +81,7 @@ async def process_name(message: types.Message, state: FSMContext):
         approve = types.KeyboardButton("Подтвердить оплату")
         back = types.KeyboardButton("Отмена")
         markup.add(back,approve)
-        await bot.send_message(message.chat.id, "Перечислите " + message.text + "usdt на адресс " + address + "\nИли оплатите по ссылке: " + url, reply_markup=markup)
+        await bot.send_message(message.chat.id, "Перечислите " + message.text + "usdt на адресс:\n" + address + "\nИли оплатите по ссылке: " + url, reply_markup=markup)
     else:
         await bot.send_message(message.chat.id, 'Введите целое число!')
 

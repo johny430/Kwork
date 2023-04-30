@@ -1,5 +1,4 @@
 from aiogram import types
-from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.utils.callback_data import CallbackData
 
 callback_numbers = CallbackData("fabnum", "action")
@@ -38,13 +37,17 @@ back_cancel_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 cancel = types.KeyboardButton("Отмена")
 back_cancel_markup.add(back, cancel)
 
+tz_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+skip = types.KeyboardButton("Пропустить")
+tz_markup.add(back,skip,cancel)
+
+
 amount_balance = types.ReplyKeyboardMarkup(resize_keyboard=True)
 item5 = types.KeyboardButton("5")
 item10 = types.KeyboardButton("10")
 item25 = types.KeyboardButton("25")
 item50 = types.KeyboardButton("50")
 item100 = types.KeyboardButton("100")
-cancel = types.KeyboardButton("Отмена")
 amount_balance.add(item5, item10, item25, item50, item100, cancel)
 
 confirm_payment_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
