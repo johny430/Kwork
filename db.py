@@ -38,11 +38,11 @@ class BotDB:
             (name, price, category, description, customer_id, tz_file_id))
         return self.conn.commit()
 
-    def add_profile(self, user_id, speciality, price, description):
+    def add_profile(self, user_id, speciality, category, price, description):
         """Добавляем профиль в базу"""
         self.cursor.execute(
-            "insert into profile (user_id, specialyti, price, description) values (?,?,?,?);",
-            (user_id, speciality, price, description))
+            "insert into profile (user_id, specialyti,profile_category, price, description) values (?,?,?,?,?);",
+            (user_id, speciality,category, price, description))
         return self.conn.commit()
 
     def get_orders(self):

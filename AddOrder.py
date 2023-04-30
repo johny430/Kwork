@@ -4,7 +4,7 @@ from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import ContentTypes
 
-from Markups import back_cancel_markup, customer_menu_markup, tz_markup
+from Markups import back_cancel_markup, customer_menu_markup, tz_markup, category_markup
 from main import bot, Database, dp
 
 
@@ -37,7 +37,7 @@ async def order_place_name(message: types.Message, state: FSMContext):
     else:
         async with state.proxy() as data_storage:
             data_storage["name"] = message.text
-        await bot.send_message(message.chat.id, "Введите стоимость заказа:", reply_markup=back_cancel_markup)
+        await bot.send_message(message.chat.id, "Введите стоимость заказа (B USDT):", reply_markup=back_cancel_markup)
         await OrderForm.Price.set()
 
 @dp.message_handler(state=OrderForm.Price)
@@ -51,7 +51,7 @@ async def order_place_name(message: types.Message, state: FSMContext):
     elif message.text.isdigit():
         async with state.proxy() as data_storage:
             data_storage["price"] = int(message.text)
-        await bot.send_message(message.chat.id, "Введите категорию заказа:", reply_markup=back_cancel_markup)
+        await bot.send_message(message.chat.id, "Введите категорию заказа:", reply_markup=category_markup)
         await OrderForm.Category.set()
     else:
         await bot.send_message(message.chat.id, "Введите корректное число!:", reply_markup=back_cancel_markup)
@@ -60,7 +60,7 @@ async def order_place_name(message: types.Message, state: FSMContext):
 @dp.message_handler(state=OrderForm.Category)
 async def order_place_name(message: types.Message, state: FSMContext):
     if message.text == "Назад":
-        await bot.send_message(message.chat.id, "Введите стоимость заказа:", reply_markup=back_cancel_markup)
+        await bot.send_message(message.chat.id, "Введите стоимость заказа (B USDT):", reply_markup=back_cancel_markup)
         await OrderForm.Name.set()
     elif message.text == "Отмена":
         await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
@@ -77,7 +77,7 @@ async def order_place_name(message: types.Message, state: FSMContext):
 @dp.message_handler(state=OrderForm.Description)
 async def order_place_name(message: types.Message, state: FSMContext):
     if message.text == "Назад":
-        await bot.send_message(message.chat.id, "Введите категорию заказа:", reply_markup=back_cancel_markup)
+        await bot.send_message(message.chat.id, "Введите категорию заказа:", reply_markup=category_markup)
         await OrderForm.Category.set()
     elif message.text == "Отмена":
         await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
