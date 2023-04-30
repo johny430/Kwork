@@ -1,5 +1,4 @@
 from aiogram import types
-from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.utils.callback_data import CallbackData
 
 callback_numbers = CallbackData("fabnum", "action")

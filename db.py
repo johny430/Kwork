@@ -69,7 +69,7 @@ class BotDB:
 
     def add_CoverLetter(self, order_id, CoverLetter, executor_id):
         """Добавляем сопроводительное письмо в базу"""
-        self.cursor.execute("insert into Customer_review (order_id, CoverLetter, executor_id) values (?,?,?);",
+        self.cursor.execute("insert into order_review (order_id, CoverLetter, executor_id) values (?,?,?);",
                             (order_id, CoverLetter, executor_id))
         return self.conn.commit()
 
@@ -81,7 +81,7 @@ class BotDB:
 
     def get_orders_reviews(self, order_id):
         """Получаем профили из базы"""
-        results = self.cursor.execute("SELECT * FROM Customer_review where order_id = ?", (order_id,))
+        results = self.cursor.execute("SELECT * FROM order_review where order_id = ?", (order_id,))
         return results.fetchall()
 
     def update_balance(self, user_id, upd_balance):
