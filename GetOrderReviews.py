@@ -6,6 +6,7 @@ from aiogram.types import CallbackQuery, ReplyKeyboardRemove
 
 from Markups import back_cancel_markup
 from InlineMarkups import Choose_Order_Markup
+from InlineMarkups import Choose_Reviews_Markup
 from Markups import customer_menu_markup
 from main import Database
 from main import dp
@@ -74,8 +75,8 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
             await state.finish()
         else:
             await callback_query.message.answer('Выберите понравшийся отклик на зазказ')
-            message_text = f'Номер: {reviews[0][0]}\nОписание: {reviews[0][2]}\n\n'
-            await callback_query.message.answer(message_text, reply_markup=Choose_Order_Markup)
+            message_text_reviews = f'Номер: {reviews[0][0]}\nОписание: {reviews[0][2]}\n\n'
+            await callback_query.message.answer(message_text_reviews, reply_markup=Choose_Reviews_Markup)
 
 @dp.message_handler(state=GetOrderReviewsForm.ReviewSelect)
 async def order_place_name(message: types.Message, state: FSMContext):

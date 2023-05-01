@@ -1,13 +1,19 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 Choose_Order_Markup = InlineKeyboardMarkup(row_width=3)
-previous = InlineKeyboardButton('<', callback_data='previous')
-confirm = InlineKeyboardButton('Выбрать', callback_data='confirm')
-next = InlineKeyboardButton('>', callback_data='next')
-Choose_Order_Markup.add(previous,confirm, next)
+previous_order = InlineKeyboardButton('<', callback_data='previous_order')
+confirm_order = InlineKeyboardButton('Выбрать', callback_data='confirm_order')
+next_order= InlineKeyboardButton('>', callback_data='next_order')
+Choose_Order_Markup.add(previous_order,confirm_order, next_order)
 
-switch_orders = InlineKeyboardMarkup()
-back_inline = InlineKeyboardButton(text="<", callback_data="back")
-approve = InlineKeyboardButton(text="Подтвердить", callback_data="approve")
-forward_inline = InlineKeyboardButton(text=">", callback_data="forvard")
-switch_orders.add(back_inline,approve,forward_inline)
+Choose_Profile_Markup = InlineKeyboardMarkup()
+back_profile = InlineKeyboardButton(text="<", callback_data="back_profile")
+approve_profile = InlineKeyboardButton(text="Подтвердить", callback_data="approve_profile")
+forvard_profile = InlineKeyboardButton(text=">", callback_data="forvard_profile")
+Choose_Profile_Markup.add(back_profile,approve_profile,forvard_profile)
+
+Choose_Reviews_Markup = InlineKeyboardMarkup(row_width=3)
+previous_reviews = InlineKeyboardButton('<', callback_data='previous_reviews')
+confirm_reviews = InlineKeyboardButton('Выбрать', callback_data='confirm_reviews')
+next_rewiews = InlineKeyboardButton('>', callback_data='next_rewiews')
+Choose_Reviews_Markup.add(previous_reviews,confirm_reviews, next_rewiews)

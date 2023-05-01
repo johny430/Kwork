@@ -86,9 +86,9 @@ class BotDB:
                             (profile_id, tz, customer_id))
         return self.conn.commit()
 
-    def get_orders_reviews(self, order_id):
+    def get_orders_reviews(self, order):
         """Получаем профили из базы"""
-        results = self.cursor.execute("SELECT * FROM order_review where order_id = ?", (order_id,))
+        results = self.cursor.execute("SELECT * FROM order_review where order_id = (?)", (order,))
         return results.fetchall()
 
     def update_balance(self, user_id, upd_balance):

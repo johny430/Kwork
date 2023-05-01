@@ -17,8 +17,6 @@ from main import Database
 from main import bot
 from main import dp
 
-storage = MemoryStorage()
-
 class GetOrderForm(StatesGroup):
     OrderSelect = State()
 
@@ -39,7 +37,7 @@ async def Search_orders(message: types.Message, state: FSMContext):
     await bot.send_message(message.chat.id, message_text, reply_markup=Choose_Order_Markup)
     await GetOrderForm.OrderSelect.set()
 
-@dp.callback_query_handler(Text(equals='previous'),state=GetOrderForm.OrderSelect)
+@dp.callback_query_handler(Text(equals='previous_order'),state=GetOrderForm.OrderSelect)
 async def previous_result(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     async with state.proxy() as data_storage:
@@ -53,7 +51,7 @@ async def previous_result(callback_query: CallbackQuery, state: FSMContext):
         await callback_query.message.edit_text(text=message_text,reply_markup=Choose_Order_Markup)
 
 
-@dp.callback_query_handler(Text(equals='next'),state=GetOrderForm.OrderSelect)
+@dp.callback_query_handler(Text(equals='next_order'),state=GetOrderForm.OrderSelect)
 async def next_result(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     async with state.proxy() as data_storage:
