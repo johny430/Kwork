@@ -12,7 +12,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.types import Message, CallbackQuery
 from Markups import back_cancel_markup, executor_menu_markup
-from InlineMarkups import Choose_Markup
+from InlineMarkups import Choose_Order_Markup
 from main import Database
 from main import bot
 from main import dp
@@ -36,7 +36,7 @@ async def Search_orders(message: types.Message, state: FSMContext):
     id = str(results[0][0])
     price = str(results[0][2])
     message_text += f'{id}. {results[0][1]}\n Цена: {price}\n Описание: {results[0][3]}\n'
-    await bot.send_message(message.chat.id, message_text, reply_markup=Choose_Markup)
+    await bot.send_message(message.chat.id, message_text, reply_markup=Choose_Order_Markup)
     await GetOrderForm.OrderSelect.set()
 
 @dp.callback_query_handler(Text(equals='previous'),state=GetOrderForm.OrderSelect)
@@ -50,7 +50,7 @@ async def previous_result(callback_query: CallbackQuery, state: FSMContext):
         data_storage["index"] = index
         data = data_storage["data"][index]
         message_text = f'{data[1]}\nЦена: {str(data[2])}\nОписание: {str(data[3])}\n'
-        await callback_query.message.edit_text(text=message_text,reply_markup=Choose_Markup)
+        await callback_query.message.edit_text(text=message_text,reply_markup=Choose_Order_Markup)
 
 
 @dp.callback_query_handler(Text(equals='next'),state=GetOrderForm.OrderSelect)
@@ -65,4 +65,4 @@ async def next_result(callback_query: CallbackQuery, state: FSMContext):
         data_storage["index"] = index
         data = data_storage["data"][index]
         message_text = f'{data[1]}\nЦена: {str(data[2])}\nОписание: {str(data[3])}\n'
-        await callback_query.message.edit_text(text=message_text,reply_markup=Choose_Markup)
+        await callback_query.message.edit_text(text=message_text,reply_markup=Choose_Order_Markup)

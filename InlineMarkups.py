@@ -1,10 +1,10 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-Choose_Markup = InlineKeyboardMarkup(row_width=3)
+Choose_Order_Markup = InlineKeyboardMarkup(row_width=3)
 previous = InlineKeyboardButton('<', callback_data='previous')
 confirm = InlineKeyboardButton('Выбрать', callback_data='confirm')
 next = InlineKeyboardButton('>', callback_data='next')
-Choose_Markup.add(previous,confirm, next)
+Choose_Order_Markup.add(previous,confirm, next)
 
 switch_orders = InlineKeyboardMarkup()
 back_inline = InlineKeyboardButton(text="<", callback_data="back")
