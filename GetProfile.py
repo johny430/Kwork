@@ -1,18 +1,11 @@
 from aiogram import types
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
-from aiogram.dispatcher.filters import Command
-from aiogram.dispatcher.filters import state
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
-from aiogram.types import Message, CallbackQuery
-from Markups import back_cancel_markup, executor_menu_markup
+from aiogram.types import CallbackQuery
+
 from InlineMarkups import Choose_Profile_Markup
+from Markups import customer_menu_markup, back_cancel_markup
 from main import Database
 from main import bot
 from main import dp
@@ -20,6 +13,7 @@ from main import dp
 
 class GetProfileForm(StatesGroup):
     ProfileSelect = State()
+    Order = State()
 
 
 @dp.message_handler(Text(equals="Поиск исполнителей"))
@@ -64,49 +58,29 @@ async def next_result(callback_query: CallbackQuery, state: FSMContext):
         message_text = f'Специальность: {data[1]}\n Цена в час: {data[2]}\n Описание: {data[3]}\n'
         await callback_query.message.edit_text(text=message_text,reply_markup=Choose_Profile_Markup)
 
+@dp.callback_query_handler(Text(equals='confirm_profile'), state=GetProfileForm.ProfileSelect)
+async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    async with state.proxy() as data_storage:
+        index = data_storage["index"]
+        data = data_storage["data"][index]
+        message_text = f'Специальность: {data[1]}\n Цена в час: {data[2]}\n Описание: {data[3]}\n'
+        await callback_query.message.edit_text(text=message_text)
+        await callback_query.message.answer(text="Напишие Ваше предложение исполнителю:",reply_markup=back_cancel_markup)
+        await GetProfileForm.Order.set()
 
-
-
-
-
-#
-# @dp.message_handler(state=GetProfileForm.CoverLetter)
-# async def CoverLet(message: types.Message, state: FSMContext):
-#     if message.text == "Назад":
-#         await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
-#         await state.finish()
-#     elif message.text == "Отмена":
-#         await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
-#         await state.finish()
-#     elif message.text.isdigit():
-#         id = int(message.text)
-#         order = Database.get_profile_id(id)
-#         if order == None:
-#             await bot.send_message(message.chat.id, "Такого исполнителя не существует. Введите корректное значение!")
-#         else:
-#             async with state.proxy() as data_storage:
-#                 data_storage["id"] = int(message.text)
-#             await bot.send_message(message.chat.id, "Напишите ваше предложение с ТЗ",
-#                                    reply_markup=back_cancel_markup)
-#             await GetProfileForm.Mail.set()
-#     else:
-#         await bot.send_message(message.chat.id, "Введите корректное число!:", reply_markup=back_cancel_markup)
-#
-#
-# @dp.message_handler(state=GetProfileForm.Mail)
-# async def Mailing_cust(message: types.Message, state: FSMContext):
-#     if message.text == "Назад":
-#         await bot.send_message(message.chat.id, "Выберите номер заказа:", reply_markup=back_cancel_markup)
-#         await GetProfileForm.CoverLetter.set()
-#     elif message.text == "Отмена":
-#         await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
-#         await state.finish()
-#     else:
-#         async with state.proxy() as data_storage:
-#             TZ = message.text
-#             id = data_storage["id"]
-#             message_text = f"Ваш запрос успешно отправлен исполнителю: \n{TZ}"
-#             await bot.send_message(message.chat.id, message_text)
-#             await bot.send_message(message.chat.id, "Меню", reply_markup=customer_menu_markup)
-#             Database.add_TZ(id, TZ, message.from_user.id)
-#             await state.finish()
+@dp.message_handler(state=GetProfileForm.Order)
+async def send_tz(message: types.Message, state:FSMContext):
+    if message.text == "Назад":
+        await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
+        await GetProfileForm.ProfileSelect.set()
+    elif message.text == "Отмена":
+        await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
+        await state.finish()
+    else:
+        TZ = message.text
+        async with state.proxy() as data_storage:
+            index = data_storage["index"]
+            Database.add_TZ(index, TZ,message.from_user.id)
+            await bot.send_message(message.chat.id,f'Ваше предложение успешно отправлено:\n{TZ}',reply_markup=customer_menu_markup)
+            await state.finish()

@@ -7,9 +7,9 @@ next_order= InlineKeyboardButton('>', callback_data='next_order')
 Choose_Order_Markup.add(previous_order,confirm_order, next_order)
 
 Choose_Profile_Markup = InlineKeyboardMarkup()
-back_profile = InlineKeyboardButton(text="<", callback_data="back_profile")
-approve_profile = InlineKeyboardButton(text="Подтвердить", callback_data="approve_profile")
-forvard_profile = InlineKeyboardButton(text=">", callback_data="forvard_profile")
+back_profile = InlineKeyboardButton(text="<", callback_data="previous_profile")
+approve_profile = InlineKeyboardButton(text="Подтвердить", callback_data="confirm_profile")
+forvard_profile = InlineKeyboardButton(text=">", callback_data="next_profile")
 Choose_Profile_Markup.add(back_profile,approve_profile,forvard_profile)
 
 Choose_Reviews_Markup = InlineKeyboardMarkup(row_width=3)
