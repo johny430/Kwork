@@ -3,27 +3,20 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
-from aiogram.dispatcher.filters import Command
-from aiogram.dispatcher.filters import state
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters import Text
-from aiogram.types import Message
-from Markups import back_cancel_markup, executor_menu_markup, switch_orders
+
+from Markups import switch_orders
 from main import Database
 from main import bot
 from main import dp
 
 storage = MemoryStorage()
 
+
 class GetOrderForm(StatesGroup):
     GetOrder = State()
     Choose = State()
     CoverLetter = State()
     Mail = State()
-
 
 
 @dp.message_handler(Text(equals="Поиск заказов"))
@@ -35,8 +28,6 @@ async def Search_orders(message: types.Message, state: FSMContext):
         price = str(result[2])
         message_text += f'{id}. {result[1]}\n Цена: {price}\n Описание: {result[3]}\n'
     await bot.send_message(message.chat.id, message_text, reply_markup=switch_orders)
-
-
 
 # @dp.message_handler(state=GetOrderForm.CoverLetter)
 # async def CL(message: types.Message, state: FSMContext):

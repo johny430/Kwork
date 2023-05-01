@@ -8,7 +8,7 @@ class SupportClientChat:
         self.client = TelegramClient(None, api_id, api_hash)
 
     async def client_start(self):
-        await self.client.start(phone="+212 76 164 4011",password="9437")
+        await self.client.start(phone="+212 76 164 4011", password="9437")
         # await self.client.run_until_disconnected()
 
     async def create_group_chat_with_link(self, title):

@@ -27,5 +27,5 @@ async def start(message: types.Message):
         await bot.send_message(message.chat.id, "Выберите пункт меню", reply_markup=customer_menu_markup)
     else:
         Database.add_user(message.from_user.id, 0)
-        await message.answer("Здравствуйте, " + message.from_user.first_name + "!\nСпасибо за регистрацию на бирже!", reply_markup=customer_menu_markup)
-
+        await message.answer("Здравствуйте, " + message.from_user.first_name + "!\nСпасибо за регистрацию на бирже!",
+                             reply_markup=customer_menu_markup)

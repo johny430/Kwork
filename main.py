@@ -34,7 +34,7 @@ async def my_event_handler(event):
 
 
 async def main():
-    await Chat.client_start()
+    #await Chat.client_start()
     await dp.start_polling(bot)
 
 
