@@ -10,8 +10,9 @@ from aiogram.dispatcher.filters import Command
 from aiogram.dispatcher.filters import state
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
-from aiogram.types import Message
-from Markups import back_cancel_markup, executor_menu_markup, switch_orders
+from aiogram.types import Message, CallbackQuery
+from Markups import back_cancel_markup, executor_menu_markup
+from InlineMarkups import Choose_Markup
 from main import Database
 from main import bot
 from main import dp
@@ -19,62 +20,49 @@ from main import dp
 storage = MemoryStorage()
 
 class GetOrderForm(StatesGroup):
-    GetOrder = State()
-    Choose = State()
-    CoverLetter = State()
-    Mail = State()
+    OrderSelect = State()
+
 
 
 
 @dp.message_handler(Text(equals="Поиск заказов"))
 async def Search_orders(message: types.Message, state: FSMContext):
-    results = Database.get_order(1)
+    results = Database.get_orders()
+    async with state.proxy() as data_storage:
+        data_storage["index"] = 0
+        data_storage["data"] = results
+        data_storage["message_id"] = message.message_id
     message_text = 'Список доступных Заказов:\n'
-    for result in results:
-        id = str(result[0])
-        price = str(result[2])
-        message_text += f'{id}. {result[1]}\n Цена: {price}\n Описание: {result[3]}\n'
-    await bot.send_message(message.chat.id, message_text, reply_markup=switch_orders)
+    id = str(results[0][0])
+    price = str(results[0][2])
+    message_text += f'{id}. {results[0][1]}\n Цена: {price}\n Описание: {results[0][3]}\n'
+    await bot.send_message(message.chat.id, message_text, reply_markup=Choose_Markup)
+    await GetOrderForm.OrderSelect.set()
+
+@dp.callback_query_handler(Text(equals='previous'),state=GetOrderForm.OrderSelect)
+async def previous_result(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    async with state.proxy() as data_storage:
+        index = data_storage["index"]
+        if index < 1:
+            return
+        index -= 1
+        data_storage["index"] = index
+        data = data_storage["data"][index]
+        message_text = f'{data[1]}\nЦена: {str(data[2])}\nОписание: {str(data[3])}\n'
+        await callback_query.message.edit_text(text=message_text,reply_markup=Choose_Markup)
 
 
-
-# @dp.message_handler(state=GetOrderForm.CoverLetter)
-# async def CL(message: types.Message, state: FSMContext):
-#     if message.text == "Назад":
-#         await bot.send_message(message.chat.id, "Меню:", reply_markup=executor_menu_markup)
-#         await state.finish()
-#     elif message.text == "Отмена":
-#         await bot.send_message(message.chat.id, "Меню:", reply_markup=executor_menu_markup)
-#         await state.finish()
-#     elif message.text.isdigit():
-#         id = int(message.text)
-#         order = Database.get_order_id(id)
-#         if order == None:
-#             await bot.send_message(message.chat.id, "Такого заказа не существует. Введите корректное значение!")
-#         else:
-#             async with state.proxy() as data_storage:
-#                 data_storage["id"] = int(message.text)
-#             await bot.send_message(message.chat.id, "Напишите заказчику каким образом вы можете решить его проблему:",
-#                                    reply_markup=back_cancel_markup)
-#             await GetOrderForm.Mail.set()
-#     else:
-#         await bot.send_message(message.chat.id, "Введите корректное число!:", reply_markup=back_cancel_markup)
-#
-#
-# @dp.message_handler(state=GetOrderForm.Mail)
-# async def Mailing(message: types.Message, state: FSMContext):
-#     if message.text == "Назад":
-#         await bot.send_message(message.chat.id, "Выберите номер заказа:", reply_markup=back_cancel_markup)
-#         await GetOrderForm.CoverLetter.set()
-#     elif message.text == "Отмена":
-#         await bot.send_message(message.chat.id, "Меню:", reply_markup=executor_menu_markup)
-#         await state.finish()
-#     else:
-#         async with state.proxy() as data_storage:
-#             CoverLetter = message.text
-#             id = data_storage["id"]
-#             message_text = f"Ваше сопроводительное письмо успешно отправлено: \n{CoverLetter}"
-#             await bot.send_message(message.chat.id, message_text)
-#             await bot.send_message(message.chat.id, "Меню", reply_markup=executor_menu_markup)
-#             Database.add_CoverLetter(id, CoverLetter, message.from_user.id)
-#             await state.finish()
+@dp.callback_query_handler(Text(equals='next'),state=GetOrderForm.OrderSelect)
+async def next_result(callback_query: CallbackQuery, state: FSMContext):
+    await callback_query.answer()
+    async with state.proxy() as data_storage:
+        size = len(data_storage["data"])
+        index = data_storage["index"]
+        if index > size-2:
+            return
+        index += 1
+        data_storage["index"] = index
+        data = data_storage["data"][index]
+        message_text = f'{data[1]}\nЦена: {str(data[2])}\nОписание: {str(data[3])}\n'
+        await callback_query.message.edit_text(text=message_text,reply_markup=Choose_Markup)
