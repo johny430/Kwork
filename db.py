@@ -50,9 +50,9 @@ class BotDB:
         results = self.cursor.execute("SELECT * FROM orders")
         return results.fetchall()
 
-    def get_order(self,id):
+    def get_order(self, id):
         """Получаем заказ из базы"""
-        results = self.cursor.execute("SELECT * FROM orders WHERE id = (?)",(id,))
+        results = self.cursor.execute("SELECT * FROM orders WHERE id = (?)", (id,))
         return results.fetchall()
 
     def get_order_id(self, id):
