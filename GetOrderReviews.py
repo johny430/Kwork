@@ -22,7 +22,7 @@ class GetOrderReviewsForm(StatesGroup):
 # handler для создания заказа
 @dp.message_handler(Text(equals="Посмотреть отклики на заказ"))
 async def order_place(message: types.Message, state: FSMContext):
-    results = Database.get_orders()
+    results = Database.get_orders_for(message.from_user.id)
     async with state.proxy() as data_storage:
         data_storage["index"] = 0
         data_storage["data"] = results
@@ -61,7 +61,6 @@ async def next_result(callback_query: CallbackQuery, state: FSMContext):
         message_text = f'{data[1]}\nЦена: {str(data[0])}\nОписание: {str(data[3])}\n'
         await callback_query.message.edit_text(text=message_text, reply_markup=Choose_Order_Markup)
 
-
 @dp.callback_query_handler(Text(equals='confirm_order'), state=GetOrderReviewsForm.ReviewSelect)
 async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
@@ -77,6 +76,7 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
             await callback_query.message.answer('Выберите понравшийся отклик на зазказ')
             message_text_reviews = f'Номер: {reviews[0][0]}\nОписание: {reviews[0][2]}\n\n'
             await callback_query.message.answer(message_text_reviews, reply_markup=Choose_Reviews_Markup)
+
 
 @dp.message_handler(state=GetOrderReviewsForm.ReviewSelect)
 async def order_place_name(message: types.Message, state: FSMContext):

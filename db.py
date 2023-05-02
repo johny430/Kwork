@@ -55,6 +55,11 @@ class BotDB:
         results = self.cursor.execute("SELECT * FROM orders WHERE id = (?)", (id,))
         return results.fetchall()
 
+    def get_order_for(self, castomer_id):
+        """Получаем заказ из базы"""
+        results = self.cursor.execute("SELECT * FROM orders WHERE castomer_id = (?)", (castomer_id,))
+        return results.fetchall()
+
     def get_order_id(self, id):
         """Получаем конкретный заказ из базы"""
         results = self.cursor.execute(
@@ -64,7 +69,12 @@ class BotDB:
 
     def get_profile(self):
         """Получаем профили из базы"""
-        results = self.cursor.execute("SELECT id, specialyti, price, description FROM profile")
+        results = self.cursor.execute("SELECT * FROM profile")
+        return results.fetchall()
+
+    def get_profile_for(self,user_id):
+        """Получаем профили из базы"""
+        results = self.cursor.execute("SELECT * FROM profile WHERE user_id = (?)",(user_id,))
         return results.fetchall()
 
     def get_profile_id(self, id):
@@ -89,6 +99,11 @@ class BotDB:
     def get_orders_reviews(self, order):
         """Получаем профили из базы"""
         results = self.cursor.execute("SELECT * FROM order_review where order_id = (?)", (order,))
+        return results.fetchall()
+
+    def get_profile_reviews(self, profile_id):
+        """"Получаем отклики на профиль"""
+        results = self.cursor.execute("SELECT * FROM tz WHERE profile_id = (?)",(profile_id,))
         return results.fetchall()
 
     def update_balance(self, user_id, upd_balance):
