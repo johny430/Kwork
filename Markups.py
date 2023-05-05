@@ -30,8 +30,9 @@ registration_markup.add(customer_register, executor_register)
 
 balance_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 add_balance = types.KeyboardButton("Пополнить баланс")
+withdraw = types.KeyboardButton("Вывод средств")
 back = types.KeyboardButton("Назад")
-balance_markup.add(add_balance, back)
+balance_markup.add(add_balance,withdraw, back)
 
 back_cancel_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 cancel = types.KeyboardButton("Отмена")
