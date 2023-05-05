@@ -4,11 +4,11 @@ from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from telethon import events
 
-# from SupportClientChat import SupportClientChat
+from SupportClientChat import SupportClientChat
 from config import *
 from db import BotDB
 
-# Chat = SupportClientChat(api_id, api_hash)
+Chat = SupportClientChat(api_id, api_hash)
 # инициализация базы данных
 Database = BotDB("Kworkk.db")
 # создание объектов бота и диспетчера
@@ -28,13 +28,13 @@ from AddOrder import *
 async def help(message: types.Message):
     await message.answer("Список доступных команд:")
 
-# @Chat.client.on(events.NewMessage)
-# async def my_event_handler(event):
-#     print('{}'.format(event))
+@Chat.client.on(events.NewMessage)
+async def my_event_handler(event):
+    print('{}'.format(event))
 
 
 async def main():
-    # await Chat.client_start()
+    await Chat.client_start()
     await dp.start_polling(bot)
 
 
