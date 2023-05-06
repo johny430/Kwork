@@ -5,30 +5,41 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import CallbackQuery
 
 from InlineMarkups import Choose_Profile_Markup
-from Markups import customer_menu_markup, back_cancel_markup
+from Markups import customer_menu_markup, back_cancel_markup, category_markup
 from main import Database
 from main import bot
 from main import dp
 
 
 class GetProfileForm(StatesGroup):
+    Category = State()
     ProfileSelect = State()
     Order = State()
 
-
 @dp.message_handler(Text(equals="Поиск исполнителей"))
-async def Search_profile(message: types.Message, state: FSMContext):
-    results = Database.get_profile()
-    async with state.proxy() as data_storage:
-        data_storage["index"] = 0
-        data_storage["data"] = results
-        data_storage["message_id"] = message.message_id
-    message_text = 'Список доступных исполнителей:\n'
-    id = str(results[0][0])
-    price = str(results[0][2])
-    message_text += f'{id}. Специальность: {results[0][1]}\n Цена в час: {price}\n Описание: {results[0][3]}\n'
-    await bot.send_message(message.chat.id, message_text, reply_markup=Choose_Profile_Markup)
-    await GetProfileForm.ProfileSelect.set()
+async def category_profile(message: types.Message, state: FSMContext):
+    await bot.send_message(message.chat.id, "Выберите категорию заказа: ", reply_markup=category_markup)
+    await GetProfileForm.Category.set()
+
+@dp.message_handler(state= GetProfileForm.Category)
+async def search_profile(message: types.Message, state: FSMContext):
+    category = message.text
+    try:
+        results = Database.get_profile(category)
+        async with state.proxy() as data_storage:
+            data_storage["index"] = 0
+            data_storage["data"] = results
+            data_storage["message_id"] = message.message_id
+        message_text = 'Список доступных исполнителей:\n'
+        id = str(results[0][0])
+        price = str(results[0][2])
+        message_text += f'{id}. Специальность: {results[0][1]}\n Цена в час: {price}\n Описание: {results[0][3]}\n'
+        await bot.send_message(message.chat.id, message_text, reply_markup=Choose_Profile_Markup)
+        await GetProfileForm.ProfileSelect.set()
+    except:
+        await bot.send_message(message.chat.id, "В данной категории ещё нет заказов", reply_markup=category_markup)
+        await GetProfileForm.Category.set()
+
 
 @dp.callback_query_handler(Text(equals='previous_profile'),state=GetProfileForm.ProfileSelect)
 async def previous_result(callback_query: CallbackQuery, state: FSMContext):

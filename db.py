@@ -45,14 +45,9 @@ class BotDB:
             (user_id, speciality,category, price, description))
         return self.conn.commit()
 
-    def get_orders(self):
+    def get_orders(self, order_category):
         """Получаем заказ из базы"""
-        results = self.cursor.execute("SELECT * FROM orders")
-        return results.fetchall()
-
-    def get_order(self, id):
-        """Получаем заказ из базы"""
-        results = self.cursor.execute("SELECT * FROM orders WHERE id = (?)", (id,))
+        results = self.cursor.execute("SELECT * FROM orders WHERE order_category = (?)",(order_category,))
         return results.fetchall()
 
     def get_order_for(self, castomer_id):
@@ -67,9 +62,9 @@ class BotDB:
             (id,))
         return results.fetchone()
 
-    def get_profile(self):
+    def get_profile(self,profile_category):
         """Получаем профили из базы"""
-        results = self.cursor.execute("SELECT * FROM profile")
+        results = self.cursor.execute("SELECT * FROM profile WHERE profile_category = (?)",(profile_category))
         return results.fetchall()
 
     def get_profile_for(self,user_id):
