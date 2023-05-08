@@ -3,7 +3,6 @@ from aiogram.utils.callback_data import CallbackData
 
 callback_numbers = CallbackData("fabnum", "action")
 
-
 customer_menu_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 balance = types.KeyboardButton("Баланс")
 create_order = types.KeyboardButton("Создать заказ")
@@ -32,7 +31,7 @@ balance_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 add_balance = types.KeyboardButton("Пополнить баланс")
 withdraw = types.KeyboardButton("Вывод средств")
 back = types.KeyboardButton("Назад")
-balance_markup.add(add_balance,withdraw, back)
+balance_markup.add(add_balance, withdraw, back)
 
 back_cancel_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 cancel = types.KeyboardButton("Отмена")
@@ -40,8 +39,7 @@ back_cancel_markup.add(back, cancel)
 
 tz_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 skip = types.KeyboardButton("Пропустить")
-tz_markup.add(back,skip,cancel)
-
+tz_markup.add(back, skip, cancel)
 
 amount_balance = types.ReplyKeyboardMarkup(resize_keyboard=True)
 item5 = types.KeyboardButton("5")
@@ -60,9 +58,9 @@ switch_orders = types.InlineKeyboardMarkup()
 back_inline = types.InlineKeyboardButton(text="<", callback_data=callback_numbers.new(action="back"))
 approve = types.InlineKeyboardButton(text="Подтвердить", callback_data=callback_numbers.new(action="approve"))
 forward_inline = types.InlineKeyboardButton(text=">", callback_data=callback_numbers.new(action="forvard"))
-switch_orders.add(back_inline,approve,forward_inline)
+switch_orders.add(back_inline, approve, forward_inline)
 
-category_markup=types.ReplyKeyboardMarkup(resize_keyboard=True)
+category_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 design = types.KeyboardButton("Дизайн")
 it = types.KeyboardButton("Разработка и IT")
 text = types.KeyboardButton("Работа с текстом и перевод")
@@ -74,4 +72,4 @@ category_markup.add(design, it, text, seo, marketing, audio, business, back, can
 
 tz_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 skip = types.KeyboardButton("Пропустить")
-tz_markup.add(back,skip,cancel)
+tz_markup.add(back, skip, cancel)

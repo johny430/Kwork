@@ -8,7 +8,6 @@ from Markups import back_cancel_markup, customer_menu_markup, tz_markup, categor
 from main import bot, Database, dp
 
 
-
 # Класс для фиксации состояний
 class OrderForm(StatesGroup):
     Name = State()
@@ -40,6 +39,7 @@ async def order_place_name(message: types.Message, state: FSMContext):
         await bot.send_message(message.chat.id, "Введите стоимость заказа (B USDT):", reply_markup=back_cancel_markup)
         await OrderForm.Price.set()
 
+
 @dp.message_handler(state=OrderForm.Price)
 async def order_place_name(message: types.Message, state: FSMContext):
     if message.text == "Назад":
@@ -56,6 +56,7 @@ async def order_place_name(message: types.Message, state: FSMContext):
     else:
         await bot.send_message(message.chat.id, "Введите корректное число!:", reply_markup=back_cancel_markup)
 
+
 # handler который принимает стоимость заказа
 @dp.message_handler(state=OrderForm.Category)
 async def order_place_name(message: types.Message, state: FSMContext):
@@ -70,7 +71,6 @@ async def order_place_name(message: types.Message, state: FSMContext):
             data_storage["category"] = message.text
         await bot.send_message(message.chat.id, "Введите описание заказа:", reply_markup=back_cancel_markup)
         await OrderForm.Description.set()
-
 
 
 # handler который принимает описание заказа

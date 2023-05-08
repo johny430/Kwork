@@ -6,6 +6,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from Markups import back_cancel_markup, executor_menu_markup, category_markup
 from main import bot, Database, dp
 
+
 # Класс для фиксации состояний
 class ProfileForm(StatesGroup):
     Speciality = State()
@@ -13,11 +14,13 @@ class ProfileForm(StatesGroup):
     Category = State()
     Description = State()
 
+
 # handler для создания профиля
 @dp.message_handler(Text(equals="Создать анкету"))
 async def profile(message: types.Message):
     await bot.send_message(message.chat.id, "Введите вашу специлизацию:", reply_markup=back_cancel_markup)
     await ProfileForm.Speciality.set()
+
 
 # handler который принимает специальность исполнителя
 @dp.message_handler(state=ProfileForm.Speciality)
@@ -31,8 +34,10 @@ async def Profile_Speciality(message: types.Message, state: FSMContext):
     else:
         async with state.proxy() as data_storage:
             data_storage["Speciality"] = message.text
-        await bot.send_message(message.chat.id, "Введите вашу почасовую ставку (B USDT):", reply_markup=back_cancel_markup)
+        await bot.send_message(message.chat.id, "Введите вашу почасовую ставку (B USDT):",
+                               reply_markup=back_cancel_markup)
         await ProfileForm.Price.set()
+
 
 @dp.message_handler(state=ProfileForm.Price)
 async def profile_price(message: types.Message, state: FSMContext):
@@ -51,11 +56,13 @@ async def profile_price(message: types.Message, state: FSMContext):
     else:
         await bot.send_message(message.chat.id, "Введите корректное число!:", reply_markup=back_cancel_markup)
 
+
 # handler который принимает почасовую стоимость исполнителя
 @dp.message_handler(state=ProfileForm.Category)
 async def profile_price(message: types.Message, state: FSMContext):
     if message.text == "Назад":
-        await bot.send_message(message.chat.id, "Введите вашу почасовую ставку (в USDT):", reply_markup=back_cancel_markup)
+        await bot.send_message(message.chat.id, "Введите вашу почасовую ставку (в USDT):",
+                               reply_markup=back_cancel_markup)
         await ProfileForm.Price.set()
     elif message.text == "Отмена":
         await bot.send_message(message.chat.id, "Меню:", reply_markup=executor_menu_markup)
@@ -66,7 +73,6 @@ async def profile_price(message: types.Message, state: FSMContext):
         await bot.send_message(message.chat.id, "Введите ваш релевантный опыт и ваши ключевые навыки:",
                                reply_markup=back_cancel_markup)
         await ProfileForm.Description.set()
-
 
 
 # handler который принимает релевантный опыт исполнителя

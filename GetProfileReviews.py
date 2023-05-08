@@ -5,17 +5,13 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import CallbackQuery
 
 from InlineMarkups import Choose_Profile_Markup, Choose_Profile_Reviews_Markup
-from Markups import back_cancel_markup, executor_menu_markup
+from Markups import executor_menu_markup
 from main import bot, Database, dp
-
-
 
 
 # Класс для фиксации состояний
 class GetProfileReviewsForm(StatesGroup):
     ProfileReviewSelect = State()
-
-
 
 
 # handler для создания заказа

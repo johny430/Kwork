@@ -1,6 +1,5 @@
 import sqlite3
 
-
 class BotDB:
 
     def __init__(self, db_file):
@@ -42,12 +41,17 @@ class BotDB:
         """Добавляем профиль в базу"""
         self.cursor.execute(
             "insert into profile (user_id, specialyti,profile_category, price, description) values (?,?,?,?,?);",
-            (user_id, speciality,category, price, description))
+            (user_id, speciality, category, price, description))
         return self.conn.commit()
 
-    def get_orders(self, order_category):
+    def get_orders_by_customer_id(self, customer_id):
         """Получаем заказ из базы"""
-        results = self.cursor.execute("SELECT * FROM orders WHERE order_category = (?)",(order_category,))
+        results = self.cursor.execute("SELECT * FROM orders WHERE customer_id = (?)", (customer_id,))
+        return results.fetchall()
+
+    def get_orders_by_category(self, order_category):
+        """Получаем заказ из базы"""
+        results = self.cursor.execute("SELECT * FROM orders WHERE order_category = (?)", (order_category,))
         return results.fetchall()
 
     def get_order_for(self, castomer_id):
@@ -62,14 +66,14 @@ class BotDB:
             (id,))
         return results.fetchone()
 
-    def get_profile(self,profile_category):
+    def get_profile(self, profile_category):
         """Получаем профили из базы"""
-        results = self.cursor.execute("SELECT * FROM profile WHERE profile_category = (?)",(profile_category))
+        results = self.cursor.execute("SELECT * FROM profile WHERE profile_category = (?)", (profile_category))
         return results.fetchall()
 
-    def get_profile_for(self,user_id):
+    def get_profile_for(self, user_id):
         """Получаем профили из базы"""
-        results = self.cursor.execute("SELECT * FROM profile WHERE user_id = (?)",(user_id,))
+        results = self.cursor.execute("SELECT * FROM profile WHERE user_id = (?)", (user_id,))
         return results.fetchall()
 
     def get_profile_id(self, id):
@@ -98,10 +102,16 @@ class BotDB:
 
     def get_profile_reviews(self, profile_id):
         """"Получаем отклики на профиль"""
-        results = self.cursor.execute("SELECT * FROM tz WHERE profile_id = (?)",(profile_id,))
+        results = self.cursor.execute("SELECT * FROM tz WHERE profile_id = (?)", (profile_id,))
         return results.fetchall()
 
     def update_balance(self, user_id, upd_balance):
         """Заменяем значение балланса"""
         self.cursor.execute("UPDATE account SET balance = (?) WHERE user_id = (?) ", (upd_balance, user_id))
+        return self.conn.commit()
+
+    def add_message(self, chat_id, message_text, user_id,date):
+        """Добавляем ТЗ в базу"""
+        self.cursor.execute("insert into messages (text, chat_id, date, user_id) values (?,?,?,?);",
+                            (message_text, chat_id, date, user_id))
         return self.conn.commit()
