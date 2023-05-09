@@ -41,6 +41,7 @@ async def order_place_name(message: types.Message, state: FSMContext):
         await bot.send_message(message.chat.id, "Введите стоимость заказа (B USDT):", reply_markup=back_cancel_markup)
         await OrderForm.Price.set()
 
+
 @dp.message_handler(state=OrderForm.Price)
 async def order_place_name(message: types.Message, state: FSMContext):
     if message.text == "Назад":
@@ -56,6 +57,7 @@ async def order_place_name(message: types.Message, state: FSMContext):
         await OrderForm.Category.set()
     else:
         await bot.send_message(message.chat.id, "Введите корректное число!:", reply_markup=back_cancel_markup)
+
 
 # handler который принимает стоимость заказа
 @dp.message_handler(state=OrderForm.Category)

@@ -6,8 +6,8 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import StatesGroup, State
 
-from config import API_TOKEN
 from Markups import amount_balance, balance_markup, back_cancel_markup, customer_menu_markup
+from config import API_TOKEN
 from main import Database
 from main import bot
 from main import dp
@@ -36,7 +36,8 @@ async def change_balance(message: types.Message, state: FSMContext):
         await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
         await state.finish()
     elif message.text == "Вывод средств":
-        await bot.send_message(message.chat.id,"Введите количество USDT, которое вы хотите вывести:",reply_markup=back_cancel_markup)
+        await bot.send_message(message.chat.id, "Введите количество USDT, которое вы хотите вывести:",
+                               reply_markup=back_cancel_markup)
         await BalanceForm.Withdraw.set()
     elif message.text == "Пополнить баланс":
         await bot.send_message(message.chat.id, "Введите количество:", reply_markup=amount_balance)
@@ -44,6 +45,7 @@ async def change_balance(message: types.Message, state: FSMContext):
     else:
         await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
         await state.finish()
+
 
 @dp.message_handler(state=BalanceForm.Amount)
 async def process_name(message: types.Message, state: FSMContext):
@@ -55,13 +57,13 @@ async def process_name(message: types.Message, state: FSMContext):
     elif message.text.isdigit():
         conn = http.client.HTTPSConnection("api.commerce.coinbase.com")
         payload = json.dumps({
-        "name": "Пополнение балланса",
-                "description": "FreelanceHub",
-        "pricing_type": "fixed_price",
-        "local_price": {
-            "amount": message.text,
-            "currency": "usdt"
-        }
+            "name": "Пополнение балланса",
+            "description": "FreelanceHub",
+            "pricing_type": "fixed_price",
+            "local_price": {
+                "amount": message.text,
+                "currency": "usdt"
+            }
         })
         headers = {
             'Content-Type': 'application/json',
@@ -85,18 +87,21 @@ async def process_name(message: types.Message, state: FSMContext):
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         approve = types.KeyboardButton("Подтвердить оплату")
         back = types.KeyboardButton("Отмена")
-        markup.add(back,approve)
-        await bot.send_message(message.chat.id, "Перечислите " + message.text + "usdt на адресс:\n" + address + "\nИли оплатите по ссылке: " + url, reply_markup=markup)
+        markup.add(back, approve)
+        await bot.send_message(message.chat.id,
+                               "Перечислите " + message.text + "usdt на адресс:\n" + address + "\nИли оплатите по ссылке: " + url,
+                               reply_markup=markup)
     else:
         await bot.send_message(message.chat.id, 'Введите целое число!')
 
+
 @dp.message_handler(state=BalanceForm.Confirm)
-async def process_name2(message: types.Message,state: FSMContext):
+async def process_name2(message: types.Message, state: FSMContext):
     async with state.proxy() as data_storage:
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton("Отмена")
         item2 = types.KeyboardButton("Проверить оплату")
-        markup.add(item1,item2)
+        markup.add(item1, item2)
         if message.text == "Отмена":
             await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
             await state.finish()
@@ -115,21 +120,23 @@ async def process_name2(message: types.Message,state: FSMContext):
             data = json.loads(data)
             status = data["data"]["timeline"][-1]["status"]
             if status == "REFOUNDED":
-                #оплачено успешно
-                #amount - количество usdt на которое успешно пополнили баланс
+                # оплачено успешно
+                # amount - количество usdt на которое успешно пополнили баланс
                 amount = data_storage['amount']
-                await state.reset_state (with_data = False)
-                await bot.send_message(message.chat.id, "Оплачено успешно!",reply_markup=customer_menu_markup)
+                await state.reset_state(with_data=False)
+                await bot.send_message(message.chat.id, "Оплачено успешно!", reply_markup=customer_menu_markup)
                 # пополняем баланс на amount usdt
                 user_id = message.chat.id
                 upd_balance = Database.get_balance(user_id) + amount
                 Database.update_balance(user_id, upd_balance)
                 await state.finish()
             else:
-                await bot.send_message(message.chat.id, "Оплата пока не найдена. Возвожно она не прошла проверку сетью.Попробуйте позже!")
+                await bot.send_message(message.chat.id,
+                                       "Оплата пока не найдена. Возвожно она не прошла проверку сетью.Попробуйте позже!")
+
 
 @dp.message_handler(state=BalanceForm.Withdraw)
-async def withdraw_amount(message: types.Message, state:FSMContext):
+async def withdraw_amount(message: types.Message, state: FSMContext):
     if message.text == "Назад":
         async with state.proxy() as data_storage:
             money = Database.get_balance(user_id=message.from_user.id)
@@ -148,17 +155,20 @@ async def withdraw_amount(message: types.Message, state:FSMContext):
         async with state.proxy() as data_storege:
             if int(message.text) <= int(data_storege["money"]):
                 data_storege["amount"] = message.text
-                await bot.send_message(message.chat.id,"Введите ваш USDT кошелек в сети TRC20",reply_markup=back_cancel_markup)
+                await bot.send_message(message.chat.id, "Введите ваш USDT кошелек в сети TRC20",
+                                       reply_markup=back_cancel_markup)
                 await BalanceForm.Wallet.set()
             else:
-                await bot.send_message(message.chat.id,"Недостаточно средств")
+                await bot.send_message(message.chat.id, "Недостаточно средств")
     else:
         await bot.send_message(message.chat.id, 'Введите целое число!')
 
+
 @dp.message_handler(state=BalanceForm.Wallet)
-async def withdraw_amount(message: types.Message, state:FSMContext):
+async def withdraw_amount(message: types.Message, state: FSMContext):
     if message.text == "Назад":
-        await bot.send_message(message.chat.id, "Введите количество USDT, которое вы хотите вывести:", reply_markup=back_cancel_markup)
+        await bot.send_message(message.chat.id, "Введите количество USDT, которое вы хотите вывести:",
+                               reply_markup=back_cancel_markup)
         await BalanceForm.Withdraw.set()
     elif message.text == "Отмена":
         async with state.proxy() as data_storage:
@@ -173,11 +183,13 @@ async def withdraw_amount(message: types.Message, state:FSMContext):
             admin_chat_id = 6221033221
             user_id = message.from_user.id
             message_text = f"Пользователь {user_id} подал запрос на вывод.\n{amount} USDT\n {message.text} - TRC20 кошелёк. "
-            await bot.send_message(message.chat.id,f"Ваш запрос на вывод принят.\nКолво USDT: {amount}\nКошелёк: {message.text}\nВывод происходит каждый вторник и четверг.",reply_markup=customer_menu_markup)
-            await bot.send_message(admin_chat_id,message_text)
+            await bot.send_message(message.chat.id,
+                                   f"Ваш запрос на вывод принят.\nКолво USDT: {amount}\nКошелёк: {message.text}\nВывод происходит каждый вторник и четверг.",
+                                   reply_markup=customer_menu_markup)
+            await bot.send_message(admin_chat_id, message_text)
             balance = Database.get_balance(user_id=message.from_user.id)
             upd_balance = int(balance) - int(amount)
-            Database.update_balance(user_id,str(upd_balance))
+            Database.update_balance(user_id, str(upd_balance))
             await state.finish()
     else:
-        await bot.send_message(message.chat.id,"Введите кошелёк в сети TRC20",reply_markup=back_cancel_markup)
+        await bot.send_message(message.chat.id, "Введите кошелёк в сети TRC20", reply_markup=back_cancel_markup)

@@ -63,7 +63,7 @@ async def previous_result(callback_query: CallbackQuery, state: FSMContext):
         data_storage["index"] = index
         data = data_storage["data"][index]
         message_text = f'{data[1]}\nЦена: {str(data[2])}\nОписание: {str(data[3])}\n'
-        await callback_query.message.edit_text(text=message_text,reply_markup=Choose_Order_Markup)
+        await callback_query.message.edit_text(text=message_text, reply_markup=Choose_Order_Markup)
 
 
 @dp.callback_query_handler(Text(equals='next_order'),state=GetOrderForm.OrderSelect)
@@ -142,3 +142,9 @@ async def send_CoverLatter(message: types.Message, state:FSMContext):
             Database.add_CoverLetter(index,deadline,cost,CoverLatter,message.from_user.id)
             await bot.send_message(message.chat.id,f'Ваш запрос успешно отправлен!\nВы выполните заказ за {deadline} дней\nНазначенная стоимость: {cost} USDT\nСопроводительное письмо: {CoverLatter}',reply_markup=executor_menu_markup)
             await state.finish()
+
+
+
+
+
+

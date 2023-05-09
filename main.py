@@ -1,19 +1,23 @@
 import asyncio
 
+import telethon
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from telethon import events
+from telethon import events, Button
 
 from SupportClientChat import SupportClientChat
 from config import *
 from db import BotDB
 
-Chat = SupportClientChat(api_id, api_hash)
 # инициализация базы данных
 Database = BotDB("Kworkk.db")
 # создание объектов бота и диспетчера
 bot = Bot(token=Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
+
+
+Chat = SupportClientChat(api_id, api_hash)
+
 
 from general import *
 from GetProfile import *
@@ -23,18 +27,16 @@ from Registration import *
 from Balance import *
 from AddProfile import *
 from AddOrder import *
+from Group import *
 
 @dp.message_handler(commands=['help'])
-async def help(message: types.Message):
+async def help_handler(message: types.Message):
+    print(message.chat.id)
     await message.answer("Список доступных команд:")
-
-@Chat.client.on(events.NewMessage)
-async def my_event_handler(event):
-    print('{}'.format(event))
 
 
 async def main():
-    # await Chat.client_start()
+    await Chat.client_start()
     await dp.start_polling(bot)
 
 
