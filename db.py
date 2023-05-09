@@ -24,11 +24,11 @@ class BotDB:
             (int(user_id), account_type))
         return self.conn.commit()
 
-    def add_order(self, name, price, category, description, customer_id):
+    def add_order(self, name, price, category, deadline, description, customer_id):
         """Добавляем заказ в базу"""
         self.cursor.execute(
-            "insert into orders (oder_name, order_price, order_category, order_description, customer_id) values (?,?,?,?,?);",
-            (name, price, category, description, customer_id))
+            "insert into orders (oder_name, order_price, order_category, order_deadline, order_description, customer_id) values (?,?,?,?,?,?);",
+            (name, price, category, deadline, description, customer_id))
         return self.conn.commit()
 
     def add_order_tz(self, name, price, category, description, customer_id, tz_file_id):
@@ -79,16 +79,16 @@ class BotDB:
             (id,))
         return results.fetchone()
 
-    def add_CoverLetter(self, order_id, CoverLetter, executor_id):
+    def add_CoverLetter(self, order_id, deadline, cost, CoverLetter, executor_id):
         """Добавляем сопроводительное письмо в базу"""
-        self.cursor.execute("insert into order_review (order_id, CoverLetter, executor_id) values (?,?,?);",
-                            (order_id, CoverLetter, executor_id))
+        self.cursor.execute("insert into order_review (order_id, dedline, cost, CoverLetter, executor_id) values (?,?,?,?,?);",
+                            (order_id,deadline,cost, CoverLetter, executor_id))
         return self.conn.commit()
 
-    def add_TZ(self, profile_id, tz, customer_id):
+    def add_TZ(self, profile_id, deadline, cost, tz, customer_id):
         """Добавляем ТЗ в базу"""
-        self.cursor.execute("insert into tz (profile_id, tz, customer_id) values (?,?,?);",
-                            (profile_id, tz, customer_id))
+        self.cursor.execute("insert into tz (profile_id, deadline, cost, tz, customer_id) values (?,?,?,?,?);",
+                            (profile_id, deadline, cost, tz, customer_id))
         return self.conn.commit()
 
     def get_orders_reviews(self, order):

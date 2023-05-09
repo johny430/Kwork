@@ -14,6 +14,7 @@ class OrderForm(StatesGroup):
     Name = State()
     Price = State()
     Category = State()
+    Deadline = State()
     Description = State()
     TechnicalTask = State()
 
@@ -68,17 +69,31 @@ async def order_place_name(message: types.Message, state: FSMContext):
     else:
         async with state.proxy() as data_storage:
             data_storage["category"] = message.text
-        await bot.send_message(message.chat.id, "Введите описание заказа:", reply_markup=back_cancel_markup)
+        await bot.send_message(message.chat.id, "Каков срок исполнения заказа(в днях)?", reply_markup=back_cancel_markup)
+        await OrderForm.Deadline.set()
+
+@dp.message_handler(state=OrderForm.Deadline)
+async def order_place_deadline(message: types.Message, state: FSMContext):
+    if message.text == "Назад":
+        await bot.send_message(message.chat.id, "Введите категорию заказа:", reply_markup=category_markup)
+        await OrderForm.Category.set()
+    elif message.text == "Отмена":
+        await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
+        await state.finish()
+    elif message.text.isdigit():
+        async with state.proxy() as data_storage:
+            data_storage["deadline"] = int(message.text)
+        await bot.send_message(message.chat.id, "Введите описание заказа:", reply_markup=category_markup)
         await OrderForm.Description.set()
-
-
+    else:
+        await bot.send_message(message.chat.id, "Введите корректное число!:", reply_markup=back_cancel_markup)
 
 # handler который принимает описание заказа
 @dp.message_handler(state=OrderForm.Description)
 async def order_place_name(message: types.Message, state: FSMContext):
     if message.text == "Назад":
-        await bot.send_message(message.chat.id, "Введите категорию заказа:", reply_markup=category_markup)
-        await OrderForm.Category.set()
+        await bot.send_message(message.chat.id, "Каков срок исполнения заказа(в днях)?", reply_markup=category_markup)
+        await OrderForm.Deadline.set()
     elif message.text == "Отмена":
         await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
         await state.finish()
@@ -102,11 +117,12 @@ async def order_place_name(message: types.Message, state: FSMContext):
             name = data_storage["name"]
             price = data_storage["price"]
             category = data_storage["category"]
+            deadline = data_storage["deadline"]
             description = data_storage["description"]
-            message_text = f"Название: {name}\nЦена: {price} USDT\nКатегория: {category}\nОписание:{description}"
+            message_text = f"Название: {name}\nЦена: {price} USDT\nКатегория: {category}\nСрок выполнения: {deadline}\nОписание:{description}"
             await bot.send_message(message.chat.id, "Заказ успешно добавлен!\nДанные закаказа:" + message_text)
             await bot.send_message(message.chat.id, "Меню", reply_markup=customer_menu_markup)
-            Database.add_order(name, price, category, description, message.from_user.id)
+            Database.add_order(name, price, category, deadline, description, message.from_user.id)
             await state.finish()
     elif message.document:
         tz_filename = message.document.file_name

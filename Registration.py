@@ -2,6 +2,7 @@ import enum
 
 from aiogram import types
 from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.dispatcher.filters import Text
 
 from Markups import customer_menu_markup
 from main import Database
@@ -29,3 +30,6 @@ async def start(message: types.Message):
         Database.add_user(message.from_user.id, 0)
         await message.answer("Здравствуйте, " + message.from_user.first_name + "!\nСпасибо за регистрацию на бирже!",
                              reply_markup=customer_menu_markup)
+
+
+

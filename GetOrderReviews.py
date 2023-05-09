@@ -8,7 +8,6 @@ from Markups import back_cancel_markup
 from InlineMarkups import Choose_Order_Markup
 from InlineMarkups import Choose_Reviews_Markup
 from Markups import customer_menu_markup
-from Markups import customer_menu_markup
 from main import Database
 from main import dp
 from main import bot

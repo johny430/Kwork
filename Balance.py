@@ -131,11 +131,19 @@ async def process_name2(message: types.Message,state: FSMContext):
 @dp.message_handler(state=BalanceForm.Withdraw)
 async def withdraw_amount(message: types.Message, state:FSMContext):
     if message.text == "Назад":
-        await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
-        await state.finish()
+        async with state.proxy() as data_storage:
+            money = Database.get_balance(user_id=message.from_user.id)
+            data_storage["money"] = money
+            await bot.send_message(message.chat.id, 'Ваш балланс = ' + str(money) + " USDT",
+                                   reply_markup=balance_markup)
+            await BalanceForm.Check.set()
     elif message.text == "Отмена":
-        await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
-        await state.finish()
+        async with state.proxy() as data_storage:
+            money = Database.get_balance(user_id=message.from_user.id)
+            data_storage["money"] = money
+            await bot.send_message(message.chat.id, 'Ваш балланс = ' + str(money) + " USDT",
+                                   reply_markup=balance_markup)
+            await BalanceForm.Check.set()
     elif message.text.isdigit():
         async with state.proxy() as data_storege:
             if int(message.text) <= int(data_storege["money"]):
@@ -153,8 +161,12 @@ async def withdraw_amount(message: types.Message, state:FSMContext):
         await bot.send_message(message.chat.id, "Введите количество USDT, которое вы хотите вывести:", reply_markup=back_cancel_markup)
         await BalanceForm.Withdraw.set()
     elif message.text == "Отмена":
-        await bot.send_message(message.chat.id, "Меню:", reply_markup=customer_menu_markup)
-        await state.finish()
+        async with state.proxy() as data_storage:
+            money = Database.get_balance(user_id=message.from_user.id)
+            data_storage["money"] = money
+            await bot.send_message(message.chat.id, 'Ваш балланс = ' + str(money) + " USDT",
+                                   reply_markup=balance_markup)
+            await BalanceForm.Check.set()
     elif message.text[:2] == "Tx":
         async with state.proxy() as data_storage:
             amount = data_storage["amount"]
