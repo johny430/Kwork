@@ -82,7 +82,7 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
             data_storage["reviews_index"] = 0
             await callback_query.message.edit_reply_markup(reply_markup=None)
             await callback_query.message.answer('Выберите понравшийся отклик на зазказ')
-            message_text_reviews = f'Описание: {reviews[0][2]}\n\n'
+            message_text_reviews = f'Номер: {reviews[0][0]}\nПредложенный срок: {reviews[0][2]} дня\nПредложенная сумма: {reviews[0][3]} USDT\nОписание: {reviews[0][4]}'
             await callback_query.message.answer(message_text_reviews, reply_markup=Choose_Reviews_Markup)
 
 
@@ -97,7 +97,7 @@ async def previous_result(callback_query: CallbackQuery, state: FSMContext):
         index -= 1
         data_storage["reviews_index"] = index
         reviews = data_storage["reviews_data"][index]
-        message_text_reviews = f'Описание: {reviews[2]}\n\n'
+        message_text_reviews = f'Номер: {reviews[0][0]}\nПредложенный срок: {reviews[0][2]} дня\nПредложенная сумма: {reviews[0][3]} USDT\nОписание: {reviews[0][4]}'
         await callback_query.message.edit_text(text=message_text_reviews, reply_markup=Choose_Reviews_Markup)
 
 
@@ -112,7 +112,7 @@ async def next_result(callback_query: CallbackQuery, state: FSMContext):
         index += 1
         data_storage["reviews_index"] = index
         reviews = data_storage["reviews_data"][index]
-        message_text_reviews = f'Описание: {reviews[2]}\n\n'
+        message_text_reviews = f'Номер: {reviews[0][0]}\nПредложенный срок: {reviews[0][2]} дня\nПредложенная сумма: {reviews[0][3]} USDT\nОписание: {reviews[0][4]}'
         await callback_query.message.edit_text(text=message_text_reviews, reply_markup=Choose_Reviews_Markup)
 
 
