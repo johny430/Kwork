@@ -7,7 +7,7 @@ from config import phone_number, cloud_password, bot_username, bot_id
 class SupportClientChat:
 
     def __init__(self, api_id, api_hash):
-        self.client = TelegramClient("sess", api_id, api_hash)
+        self.client = TelegramClient(None, api_id, api_hash)
 
     async def client_start(self):
         await self.client.start(phone=phone_number, password=cloud_password)

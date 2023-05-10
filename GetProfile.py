@@ -33,8 +33,11 @@ async def search_profile(message: types.Message, state: FSMContext):
         await state.finish()
     else:
         category = message.text
-        try:
-            results = Database.get_profile(category)
+        results = Database.get_profile(category)
+        if len(results) == 0:
+            await bot.send_message(message.chat.id, "В данной категории ещё нет заказов", reply_markup=category_markup)
+            await GetProfileForm.Category.set()
+        else:
             async with state.proxy() as data_storage:
                 data_storage["index"] = 0
                 data_storage["data"] = results
@@ -42,10 +45,9 @@ async def search_profile(message: types.Message, state: FSMContext):
             message_text = 'Список доступных исполнителей:\n'
             id = str(results[0][0])
             price = str(results[0][2])
-            message_text += f'{id}. Специальность: {results[0][1]}\n Цена в час: {price}\n Описание: {results[0][3]}\n'
+            message_text = f'{id}. Специальность: {results[0][2]}\n Цена в час: {price}\n Описание: {results[0][3]}\n'
             await bot.send_message(message.chat.id, message_text, reply_markup=Choose_Profile_Markup)
             await GetProfileForm.ProfileSelect.set()
-        except:
             await bot.send_message(message.chat.id, "В данной категории ещё нет заказов", reply_markup=category_markup)
             await GetProfileForm.Category.set()
 

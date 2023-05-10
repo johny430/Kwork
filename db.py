@@ -1,5 +1,6 @@
 import sqlite3
 
+
 class BotDB:
 
     def __init__(self, db_file):
@@ -85,8 +86,9 @@ class BotDB:
 
     def add_CoverLetter(self, order_id, deadline, cost, CoverLetter, executor_id):
         """Добавляем сопроводительное письмо в базу"""
-        self.cursor.execute("insert into order_review (order_id, dedline, cost, CoverLetter, executor_id) values (?,?,?,?,?);",
-                            (order_id,deadline,cost, CoverLetter, executor_id))
+        self.cursor.execute(
+            "insert into order_review (order_id, dedline, cost, CoverLetter, executor_id) values (?,?,?,?,?);",
+            (order_id, deadline, cost, CoverLetter, executor_id))
         return self.conn.commit()
 
     def add_TZ(self, profile_id, deadline, cost, tz, customer_id):
@@ -110,8 +112,37 @@ class BotDB:
         self.cursor.execute("UPDATE account SET balance = (?) WHERE user_id = (?) ", (upd_balance, user_id))
         return self.conn.commit()
 
-    def add_message(self, chat_id, message_text, user_id,date):
+    def add_message(self, chat_id, message_text, user_id, date):
         """Добавляем ТЗ в базу"""
         self.cursor.execute("insert into messages (text, chat_id, date, user_id) values (?,?,?,?);",
                             (message_text, chat_id, date, user_id))
         return self.conn.commit()
+
+    def get_executor_id_by_group_id(self, group_id):
+        """"Получаем отклики на профиль"""
+        results = self.cursor.execute(
+            "SELECT executor_id from order_review where id = (SELECT review_id from review_group where chat_id = (?))",
+            (group_id,))
+        return results.fetchone()[0]
+
+    def add_review_group(self, group_id, review_id):
+        """Добавляем ТЗ в базу"""
+        self.cursor.execute(
+            "insert into review_group (review_id, chat_id,customer_agree,executor_agree) values (?,?,?,?);",
+            (review_id, group_id, 0, 0))
+        return self.conn.commit()
+
+    def agree_customer(self, group_id):
+        """Добавляем ТЗ в базу"""
+        self.cursor.execute("update review_group set customer_agree = 1  where chat_id = (?);", (group_id,))
+        return self.conn.commit()
+
+    def agree_executor(self, group_id):
+        """Добавляем ТЗ в базу"""
+        self.cursor.execute("update review_group set executor_agree = 1  where chat_id = (?);", (group_id,))
+        return self.conn.commit()
+
+    def conformation_count(self, group_id):
+        result = self.cursor.execute("select customer_agree + executor_agree from review_group where chat_id = (?)",
+                                     (group_id,))
+        return result.fetchone()[0]
