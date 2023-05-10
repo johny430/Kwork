@@ -85,7 +85,7 @@ class BotDB:
 
     def add_CoverLetter(self, order_id, deadline, cost, CoverLetter, executor_id):
         """Добавляем сопроводительное письмо в базу"""
-        self.cursor.execute("insert into order_review (order_id, dedline, cost, CoverLetter, executor_id) values (?,?,?,?,?);",
+        self.cursor.execute("insert into order_review (order_id, deadline, cost, CoverLetter, executor_id) values (?,?,?,?,?);",
                             (order_id,deadline,cost, CoverLetter, executor_id))
         return self.conn.commit()
 
