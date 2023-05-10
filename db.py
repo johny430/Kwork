@@ -68,7 +68,7 @@ class BotDB:
 
     def get_profile(self, profile_category):
         """Получаем профили из базы"""
-        results = self.cursor.execute("SELECT * FROM profile WHERE profile_category = (?)", (profile_category))
+        results = self.cursor.execute("SELECT * FROM profile WHERE profile_category = (?)", (profile_category,))
         return results.fetchall()
 
     def get_profile_for(self, user_id):

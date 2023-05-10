@@ -91,6 +91,17 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
         await callback_query.message.answer(text="За какой промежуток времени вы выполните заказ (в днях) ?",reply_markup=back_cancel_markup)
         await GetOrderForm.Deadline.set()
 
+@dp.message_handler(state=GetOrderForm.OrderSelect)
+async def order_place_name(message: types.Message, state: FSMContext):
+    if message.text == "Назад":
+        await bot.send_message(message.chat.id, "Выберите категорию заказа: ", reply_markup=category_markup)
+        await GetOrderForm.Category.set()
+    elif message.text == "Отмена":
+        await message.answer("Меню:", reply_markup=executor_menu_markup)
+        await state.finish()
+    else:
+        await message.answer("Введите корректное значение!", reply_markup=back_cancel_markup)
+
 @dp.message_handler(state=GetOrderForm.Deadline)
 async def send_deadline(message: types.Message, state:FSMContext):
     if message.text == "Назад":

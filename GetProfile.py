@@ -39,10 +39,10 @@ async def search_profile(message: types.Message, state: FSMContext):
                 data_storage["index"] = 0
                 data_storage["data"] = results
                 data_storage["message_id"] = message.message_id
-            message_text = 'Список доступных исполнителей:\n'
             id = str(results[0][0])
             price = str(results[0][2])
-            message_text += f'{id}. Специальность: {results[0][1]}\n Цена в час: {price}\n Описание: {results[0][3]}\n'
+            message_text = f'{id}. Специальность: {results[0][1]}\n Цена в час: {price}\n Описание: {results[0][3]}\n'
+            await bot.send_message(message.chat.id,"Список доступных исполнителей:", reply_markup=back_cancel_markup)
             await bot.send_message(message.chat.id, message_text, reply_markup=Choose_Profile_Markup)
             await GetProfileForm.ProfileSelect.set()
         except:
@@ -88,6 +88,17 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
         await callback_query.message.edit_text(text=message_text)
         await callback_query.message.answer(text="Каков срок исполнения заказа(в днях)?",reply_markup=back_cancel_markup)
         await GetProfileForm.Deadline.set()
+
+@dp.message_handler(state=GetProfileForm.ProfileSelect)
+async def order_place_name(message: types.Message, state: FSMContext):
+    if message.text == "Назад":
+        await bot.send_message(message.chat.id, "Выберите категорию заказа: ", reply_markup=category_markup)
+        await GetProfileForm.Category.set()
+    elif message.text == "Отмена":
+        await message.answer("Меню:", reply_markup=customer_menu_markup)
+        await state.finish()
+    else:
+        await message.answer("Введите корректное значение!", reply_markup=back_cancel_markup)
 
 @dp.message_handler(state=GetProfileForm.Deadline)
 async def send_deadline(message: types.Message, state:FSMContext):
