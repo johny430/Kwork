@@ -41,7 +41,7 @@ async def search_profile(message: types.Message, state: FSMContext):
                 data_storage["message_id"] = message.message_id
             id = str(results[0][0])
             price = str(results[0][2])
-            message_text = f'{id}. Специальность: {results[0][1]}\n Цена в час: {price}\n Описание: {results[0][3]}\n'
+            message_text = f'{id}. Специальность: {results[0][2]}\n Цена в час: {price}\n Описание: {results[0][3]}\n'
             await bot.send_message(message.chat.id,"Список доступных исполнителей:", reply_markup=back_cancel_markup)
             await bot.send_message(message.chat.id, message_text, reply_markup=Choose_Profile_Markup)
             await GetProfileForm.ProfileSelect.set()
