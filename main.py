@@ -16,7 +16,7 @@ bot = Bot(token=Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
-Chat = SupportClientChat(api_id, api_hash)
+# Chat = SupportClientChat(api_id, api_hash)
 
 
 from general import *
@@ -36,7 +36,7 @@ async def help_handler(message: types.Message):
 
 
 async def main():
-    await Chat.client_start()
+    # await Chat.client_start()
     await dp.start_polling(bot)
 
 
