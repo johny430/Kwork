@@ -21,6 +21,7 @@ Chat = SupportClientChat(api_id, api_hash)
 
 from general import *
 from GetProfile import *
+from GetProfileReviews import *
 from GetOrder import *
 from GetOrderReviews import *
 from Registration import *

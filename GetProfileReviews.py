@@ -17,7 +17,7 @@ class GetProfileReviewsForm(StatesGroup):
 # handler для создания заказа
 @dp.message_handler(Text(equals="Посмотреть отклики на анкету"))
 async def order_place(message: types.Message, state: FSMContext):
-    results = Database.get_profile_for()
+    results = Database.get_profile_for(message.from_user.id)
     async with state.proxy() as data_storage:
         data_storage["index"] = 0
         data_storage["data"] = results
