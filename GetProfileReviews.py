@@ -6,7 +6,7 @@ from aiogram.types import CallbackQuery
 
 from InlineMarkups import Choose_Profile_Markup, Choose_Profile_Reviews_Markup, Choose_Tz_Markup
 from Markups import executor_menu_markup, back_cancel_markup
-from main import bot, Database, dp
+from main import bot, Database, Chat, dp
 
 
 # Класс для фиксации состояний
@@ -81,7 +81,7 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
             await callback_query.message.answer(message_text_reviews, reply_markup=Choose_Profile_Reviews_Markup)
 
 
-@dp.callback_query_handler(Text(equals='previous_tz'), state=GetProfileReviewsForm.TzSelect)
+@dp.callback_query_handler(Text(equals='previous_tz'), state=GetProfileReviewsForm.ProfileReviewSelect)
 async def previous_result(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     print("gay")
@@ -96,7 +96,7 @@ async def previous_result(callback_query: CallbackQuery, state: FSMContext):
         await callback_query.message.edit_text(text=message_text_reviews, reply_markup=Choose_Tz_Markup)
 
 
-@dp.callback_query_handler(Text(equals='next_tz'), state=GetProfileReviewsForm.TzSelect)
+@dp.callback_query_handler(Text(equals='next_tz'), state=GetProfileReviewsForm.ProfileReviewSelect)
 async def next_result(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     async with state.proxy() as data_storage:
@@ -111,9 +111,19 @@ async def next_result(callback_query: CallbackQuery, state: FSMContext):
         await callback_query.message.edit_text(text=message_text_reviews, reply_markup=Choose_Tz_Markup)
 
 
-@dp.callback_query_handler(Text(equals='confirm_tz'), state=GetProfileReviewsForm.TzSelect)
-async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
-    await callback_query.answer()
+@dp.callback_query_handler(Text(equals='confirm_tz'), state=GetProfileReviewsForm.ProfileReviewSelect)
+async def confirm_result_profile(callback_query: CallbackQuery, state: FSMContext):
+        await callback_query.answer()
+        async with state.proxy() as data_storage:
+            executor_id = callback_query.message.from_user.id
+            customer_id = data_storage["reviews_data"][data_storage["reviews_index"]][3]
+            url, chat_id = await Chat.create_group_chat_with_link(f"Заказ номер {customer_id} : {executor_id}")
+            review_id = data_storage["reviews_data"][data_storage["reviews_index"]][0]
+            Database.add_review_group(chat_id, review_id)
+            await callback_query.message.answer(f'Для начала общения с заказчиком войдите в группу по ссылке:\n{url}',
+                                                reply_markup=executor_menu_markup)
+            await bot.send_message(chat_id=executor_id,
+                                   text=f"Ваш отклик понравился заказчику!!!\nДля начала общения перейдите в группу по ссылке:\n{url}")
 
 
 @dp.message_handler(state=GetProfileReviewsForm.ProfileReviewSelect)
@@ -126,3 +136,5 @@ async def order_place_name(message: types.Message, state: FSMContext):
         await state.finish()
     else:
         await message.answer("Введите корректное число!:")
+
+

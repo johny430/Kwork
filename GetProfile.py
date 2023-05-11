@@ -155,7 +155,7 @@ async def send_tz(message: types.Message, state: FSMContext):
     else:
         TZ = message.text
         async with state.proxy() as data_storage:
-            index = data_storage["index"]
+            index = data_storage["data"][data_storage["index"]][0]
             cost = data_storage["cost"]
             deadline = data_storage["deadline"]
             Database.add_TZ(index, cost, deadline, TZ, message.from_user.id)

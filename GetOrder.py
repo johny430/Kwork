@@ -155,7 +155,7 @@ async def send_CoverLatter(message: types.Message, state: FSMContext):
     else:
         CoverLatter = message.text
         async with state.proxy() as data_storage:
-            index = data_storage["index"]
+            index = data_storage["data"][data_storage["index"]][0]
             cost = data_storage["cost"]
             deadline = data_storage["deadline"]
             Database.add_CoverLetter(index, deadline, cost, CoverLatter, message.from_user.id)
