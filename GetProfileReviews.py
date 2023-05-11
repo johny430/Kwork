@@ -19,16 +19,19 @@ class GetProfileReviewsForm(StatesGroup):
 @dp.message_handler(Text(equals="Посмотреть отклики на анкету"))
 async def order_place(message: types.Message, state: FSMContext):
     results = Database.get_profile_for(message.from_user.id)
-    async with state.proxy() as data_storage:
-        data_storage["index"] = 0
-        data_storage["data"] = results
-        data_storage["message_id"] = message.message_id
-    id = str(results[0][0])
-    price = str(results[0][4])
-    message_text = f'{id}. Специальность: {results[0][2]}\n Цена в час: {price} USDT\n Описание: {results[0][3]}\n'
-    await bot.send_message(message.chat.id, 'Список Ваших анкет:', reply_markup=back_cancel_markup)
-    await bot.send_message(message.chat.id, message_text, reply_markup=Choose_Profile_Markup)
-    await GetProfileReviewsForm.ProfileReviewSelect.set()
+    if len(results) == 0:
+        await message.answer("На вашу анкету еще не откликались!\nМеню", reply_markup=executor_menu_markup)
+    else:
+        async with state.proxy() as data_storage:
+            data_storage["index"] = 0
+            data_storage["data"] = results
+            data_storage["message_id"] = message.message_id
+        id = str(results[0][0])
+        price = str(results[0][4])
+        message_text = f'{id}. Специальность: {results[0][2]}\n Цена в час: {price} USDT\n Описание: {results[0][3]}\n'
+        await bot.send_message(message.chat.id, 'Список Ваших анкет:', reply_markup=back_cancel_markup)
+        await bot.send_message(message.chat.id, message_text, reply_markup=Choose_Profile_Markup)
+        await GetProfileReviewsForm.ProfileReviewSelect.set()
 
 
 @dp.callback_query_handler(Text(equals='previous_profile'), state=GetProfileReviewsForm.ProfileReviewSelect)

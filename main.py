@@ -3,6 +3,7 @@ import asyncio
 import telethon
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.dispatcher.filters import ChatTypeFilter
 from telethon import events, Button
 
 from SupportClientChat import SupportClientChat
@@ -16,7 +17,7 @@ bot = Bot(token=Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
-Chat = SupportClientChat(api_id, api_hash)
+Chat = SupportClientChat(api_id, api_hash, "ssss")
 
 
 from general import *
@@ -31,14 +32,9 @@ from AddOrder import *
 from Group import *
 from GetOrderReviews import *
 
-@dp.message_handler(commands=['help'])
-async def help_handler(message: types.Message):
-    print(message.chat.id)
-    await message.answer("Список доступных команд:")
-
 
 async def main():
-    # await Chat.client_start()
+    #await Chat.client_start()
     await dp.start_polling(bot)
 
 

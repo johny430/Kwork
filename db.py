@@ -45,6 +45,10 @@ class BotDB:
             (user_id, speciality, category, price, description))
         return self.conn.commit()
 
+    def get_order_by_group_id(self, group_id):
+        results = self.cursor.execute("select * from orders where id = (select order_id from order_review where id = (select review_id from review_group where chat_id = (?)))", (group_id,))
+        return results.fetchone()
+
     def get_orders_by_customer_id(self, customer_id):
         """Получаем заказ из базы"""
         results = self.cursor.execute("SELECT * FROM orders WHERE customer_id = (?)", (customer_id,))
@@ -114,6 +118,13 @@ class BotDB:
             (group_id,))
         return results.fetchone()[0]
 
+    def get_customer_id_by_group_id(self, group_id):
+        """"Получаем отклики на профиль"""
+        results = self.cursor.execute(
+            "SELECT customer_id from orders WHERE id = (SELECT order_id from order_review where id = (SELECT review_id from review_group where chat_id = (?)))",
+            (group_id,))
+        return results.fetchone()[0]
+
     def add_review_group(self, group_id, review_id):
         """Добавляем ТЗ в базу"""
         self.cursor.execute(
@@ -135,3 +146,15 @@ class BotDB:
         result = self.cursor.execute("select customer_agree + executor_agree from review_group where chat_id = (?)",
                                      (group_id,))
         return result.fetchone()[0]
+
+
+    def zero_conformation(self, group_id):
+        self.cursor.execute("update review_group set executor_agree = 0, executor_agree = 0  where chat_id = (?);", (group_id,))
+        return self.conn.commit()
+
+
+    def get_review_by_group(self, group_id):
+        results = self.cursor.execute(
+            "SELECT * from order_review where id = (SELECT review_id from review_group where chat_id = (?))",
+            (group_id,))
+        return results.fetchone()[0]

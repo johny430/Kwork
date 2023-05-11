@@ -2,7 +2,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, ChatPermissions
 
 from InlineMarkups import Choose_Order_Markup
 from InlineMarkups import Choose_Reviews_Markup
@@ -127,13 +127,9 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
         url, chat_id = await Chat.create_group_chat_with_link(f"Заказ номер {customer_id} : {executor_id}")
         review_id = data_storage["reviews_data"][data_storage["reviews_index"]][0]
         Database.add_review_group(chat_id, review_id)
-        msg = await bot.send_message(chat_id,
-                                     "Для подтверждения заказа ответьте на данное сообщение командой /confirm !\nЗаказ подтверждается при согласии обоих сторон!")
         await callback_query.message.answer(f'Для начала общения с заказчиком войдите в группу по ссылке:\n{url}',
                                             reply_markup=customer_menu_markup)
-        await bot.send_message(chat_id=executor_id,
-                               text=f"Ваш отклик понравился заказчику!!!\nДля начала общения перейдите в группу по ссылке:\n{url}")
-        await bot.pin_chat_message(chat_id, msg.message_id)
+        await bot.send_message(chat_id=executor_id,text=f"Ваш отклик понравился заказчику!!!\nДля начала общения перейдите в группу по ссылке:\n{url}")
 
 
 @dp.message_handler(state=GetOrderReviewsForm.ReviewSelect)
