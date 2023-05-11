@@ -102,7 +102,7 @@ async def order_place_name(message: types.Message, state: FSMContext):
     else:
         async with state.proxy() as data_storage:
             data_storage["description"] = message.text
-        await message.answer("Сбросьте тз в виде файла:", reply_markup=tz_markup)
+        await message.answer("Сбросьте тз в виде файла:", reply_markup=back_cancel_markup)
         await OrderForm.TechnicalTask.set()
 
 

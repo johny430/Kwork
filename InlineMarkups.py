@@ -23,3 +23,9 @@ back_profile_reviews = InlineKeyboardButton(text="<", callback_data="back_profil
 approve_profile_reviews = InlineKeyboardButton(text="Подтвердить", callback_data="approve_profile_reviews")
 forvard_profile_reviews = InlineKeyboardButton(text=">", callback_data="forvard_profile_reviews")
 Choose_Profile_Reviews_Markup.add(back_profile_reviews, approve_profile_reviews, forvard_profile_reviews)
+
+Choose_Tz_Markup = InlineKeyboardMarkup(row_width=3)
+previous_tz = InlineKeyboardButton('<', callback_data='previous_tz')
+confirm_tz = InlineKeyboardButton('Выбрать', callback_data='confirm_tz')
+next_tz = InlineKeyboardButton('>', callback_data='next_tz')
+Choose_Tz_Markup.add(previous_reviews, confirm_reviews, next_rewiews)

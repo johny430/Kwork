@@ -55,17 +55,6 @@ class BotDB:
         results = self.cursor.execute("SELECT * FROM orders WHERE order_category = (?)", (order_category,))
         return results.fetchall()
 
-    def get_order_for(self, castomer_id):
-        """Получаем заказ из базы"""
-        results = self.cursor.execute("SELECT * FROM orders WHERE castomer_id = (?)", (castomer_id,))
-        return results.fetchall()
-
-    def get_order_id(self, id):
-        """Получаем конкретный заказ из базы"""
-        results = self.cursor.execute(
-            "SELECT id, oder_name, order_price, order_description, customer_id FROM orders WHERE id = (?)",
-            (id,))
-        return results.fetchone()
 
     def get_profile(self, profile_category):
         """Получаем профили из базы"""

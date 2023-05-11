@@ -90,7 +90,7 @@ async def order_place_name(message: types.Message, state: FSMContext):
             price = data_storage["price"]
             description = message.text
             category = data_storage["category"]
-            message_text = f"Ваша специальность: {speciality}\nКатегория: {category}\nВаша почасовая ставка: {price} Рублей\nВаш релевантный опыт: {description}"
+            message_text = f"Ваша специальность: {speciality}\nКатегория: {category}\nВаша почасовая ставка: {price} USDT\nВаш релевантный опыт: {description}"
             await bot.send_message(message.chat.id, "Ваш профиль успешно создан!\nСодержание:\n" + message_text)
             await bot.send_message(message.chat.id, "Меню", reply_markup=executor_menu_markup)
             Database.add_profile(message.from_user.id, speciality, category, price, description)

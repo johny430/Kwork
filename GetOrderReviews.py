@@ -24,13 +24,15 @@ class GetOrderReviewsForm(StatesGroup):
 async def order_place(message: types.Message, state: FSMContext):
     results = Database.get_orders_by_customer_id(message.from_user.id)
     if len(results) == 0:
-        await message.answer("Ви ще не створили замовлення! Меню:", reply_markup=customer_menu_markup)
+        await message.answer("У вас нет заказов")
     else:
         async with state.proxy() as data_storage:
             data_storage["order_index"] = 0
             data_storage["order_data"] = results
             data_storage["order_message_id"] = message.message_id
-        message_text = f'{results[0][1]}\nЦена: {str(results[0][0])}\nОписание: {str(results[0][3])}\n'
+        id = str(results[0][0])
+        price = str(results[0][2])
+        message_text = f'{id}. {results[0][1]}\nЦена: {price}\nСрок выполнения: {results[0][7]} дней\nОписание: {results[0][4]}\n'
         await message.answer("Выберите заказ на который хотите посмотреть отклики:", reply_markup=back_cancel_markup)
         await message.answer(message_text, reply_markup=Choose_Order_Markup)
         await GetOrderReviewsForm.ReviewSelect.set()
@@ -46,7 +48,7 @@ async def previous_result(callback_query: CallbackQuery, state: FSMContext):
         index -= 1
         data_storage["order_index"] = index
         data = data_storage["order_data"][index]
-        message_text = f'{data[1]}\nЦена: {str(data[0])}\nОписание: {str(data[3])}\n'
+        message_text = f'{data[0]}. {data[1]}\nЦена: {data[2]}\nСрок выполнения: {data[7]} дней\nОписание: {data[4]}\n'
         await callback_query.message.edit_text(text=message_text, reply_markup=Choose_Order_Markup)
 
 
@@ -61,7 +63,7 @@ async def next_result(callback_query: CallbackQuery, state: FSMContext):
         index += 1
         data_storage["order_index"] = index
         data = data_storage["order_data"][index]
-        message_text = f'{data[1]}\nЦена: {str(data[0])}\nОписание: {str(data[3])}\n'
+        message_text = f'{data[0]}. {data[1]}\nЦена: {data[2]}\nСрок выполнения: {data[7]} дней\nОписание: {data[4]}\n'
         await callback_query.message.edit_text(text=message_text, reply_markup=Choose_Order_Markup)
 
 

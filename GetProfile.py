@@ -20,7 +20,7 @@ class GetProfileForm(StatesGroup):
 
 @dp.message_handler(Text(equals="Поиск исполнителей"))
 async def category_profile(message: types.Message, state: FSMContext):
-    await bot.send_message(message.chat.id, "Выберите категорию заказа: ", reply_markup=category_markup)
+    await bot.send_message(message.chat.id, "Выберите категорию профиля: ", reply_markup=category_markup)
     await GetProfileForm.Category.set()
 
 @dp.message_handler(state= GetProfileForm.Category)
@@ -35,7 +35,7 @@ async def search_profile(message: types.Message, state: FSMContext):
         category = message.text
         results = Database.get_profile(category)
         if len(results) == 0:
-            await bot.send_message(message.chat.id, "В данной категории ещё нет заказов", reply_markup=category_markup)
+            await bot.send_message(message.chat.id, "В данной категории ещё нет профилей", reply_markup=category_markup)
             await GetProfileForm.Category.set()
         else:
             async with state.proxy() as data_storage:
@@ -60,7 +60,7 @@ async def previous_result(callback_query: CallbackQuery, state: FSMContext):
         index -= 1
         data_storage["index"] = index
         data = data_storage["data"][index]
-        message_text = f'Специальность: {data[1]}\n Цена в час: {data[2]}\n Описание: {data[3]}\n'
+        message_text = f'{data[0]}. Специальность: {data[3]}\n Цена в час: {data[2]} USDT\n Описание: {data[3]}\n'
         await callback_query.message.edit_text(text=message_text,reply_markup= Choose_Profile_Markup)
 
 
@@ -75,7 +75,7 @@ async def next_result(callback_query: CallbackQuery, state: FSMContext):
         index += 1
         data_storage["index"] = index
         data = data_storage["data"][index]
-        message_text = f'Специальность: {data[1]}\n Цена в час: {data[2]}\n Описание: {data[3]}\n'
+        message_text = f'{data[0]}. Специальность: {data[3]}\n Цена в час: {data[2]} USDT\n Описание: {data[3]}\n'
         await callback_query.message.edit_text(text=message_text,reply_markup=Choose_Profile_Markup)
 
 @dp.callback_query_handler(Text(equals='confirm_profile'), state=GetProfileForm.ProfileSelect)
@@ -98,7 +98,7 @@ async def order_place_name(message: types.Message, state: FSMContext):
         await bot.send_message(message.chat.id, "Выберите категорию заказа: ", reply_markup=category_markup)
         await GetProfileForm.Category.set()
     else:
-        await message.answer("Введите корректное число!:", reply_markup=back_cancel_markup)
+        await message.answer("Введите корректное значение:", reply_markup=back_cancel_markup)
 
 @dp.message_handler(state=GetProfileForm.Deadline)
 async def send_deadline(message: types.Message, state:FSMContext):
@@ -128,7 +128,7 @@ async def send_cost(message: types.Message, state: FSMContext):
         async with state.proxy() as data_storage:
             data_storage['cost'] = message.text
             await bot.send_message(message.chat.id,"Напишите ваше сопросводительное письмо:", reply_markup=back_cancel_markup)
-            await GetProfileForm.Tz.set()
+            await GetProfileForm.Order.set()
     else:
         await bot.send_message(message.chat.id, "Введите корректное число!:", reply_markup=back_cancel_markup)
 @dp.message_handler(state=GetProfileForm.Order)
@@ -146,5 +146,5 @@ async def send_tz(message: types.Message, state:FSMContext):
             cost = data_storage["cost"]
             deadline = data_storage["deadline"]
             Database.add_TZ(index, cost, deadline, TZ,message.from_user.id)
-            await bot.send_message(message.chat.id,f'Ваше предложение успешно отправлено!\nСрок исполнения: {deadline}\nСтоимость заказа: {cost}\nВаше предложение: {TZ}',reply_markup=customer_menu_markup)
+            await bot.send_message(message.chat.id,f'Ваше предложение успешно отправлено!\nСрок исполнения (в днях): {deadline} \nСтоимость заказа: {cost} USDT\nВаше предложение: {TZ}',reply_markup=customer_menu_markup)
             await state.finish()
