@@ -6,7 +6,7 @@ from aiogram.types import CallbackQuery
 
 from InlineMarkups import Choose_Profile_Markup, Choose_Profile_Reviews_Markup, Choose_Tz_Markup
 from Markups import executor_menu_markup, back_cancel_markup
-from main import bot, Database, Chat, dp
+from main import bot, Database, dp
 
 
 # Класс для фиксации состояний

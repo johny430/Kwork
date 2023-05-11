@@ -17,7 +17,7 @@ bot = Bot(token=Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
-Chat = SupportClientChat(api_id, api_hash, "ssss")
+# Chat = SupportClientChat(api_id, api_hash, "ssss")
 
 
 from general import *
