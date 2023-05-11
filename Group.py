@@ -3,26 +3,27 @@ from aiogram.dispatcher.filters import ChatTypeFilter
 
 import config
 from main import Database
-from main import dp
 from main import bot
+from main import dp
 
 
 async def confirm_order(customer_id, executor_id, group_id):
     if Database.conformation_count(group_id) == 2:
-        await bot.send_message(group_id,"Заказ подтвержден!!!")
+        await bot.send_message(group_id, "Заказ подтвержден!!!")
         order = Database.get_order_by_group_id(group_id)
         customer_balance = Database.get_balance(customer_id)
         review = Database.get_review_by_group(group_id)
         price = review[3] * (1 + config.commision)
         if price > customer_balance:
-            await bot.send_message(group_id,"У заказчика недостаточно средств!\nПополните баланс через бота и подтвердите заказ снова!\nТребуемая сумма {price} usdt!")
+            await bot.send_message(group_id,
+                                   "У заказчика недостаточно средств!\nПополните баланс через бота и подтвердите заказ снова!\nТребуемая сумма {price} usdt!")
             Database.zero_conformation(group_id)
         else:
             new_balance = customer_balance - price
-            Database.update_balance(customer_id,new_balance)
+            Database.update_balance(customer_id, new_balance)
             Database.confirm_order_from_group(group_id)
-            await bot.send_message(group_id, f"Заказ подтвержден!\nСрок выполнения(в днях): {review[1]}\nНаграда исполнителя {review[2]} usdt")
-
+            await bot.send_message(group_id,
+                                   f"Заказ подтвержден!\nСрок выполнения(в днях): {review[1]}\nНаграда исполнителя {review[2]} usdt")
 
 
 @dp.message_handler(commands=['confirm'], chat_type=[types.ChatType.SUPERGROUP, types.ChatType.GROUP])
@@ -32,17 +33,18 @@ async def group_command_handler(message: types.Message):
     if message.from_user.id == executor_id:
         Database.agree_executor(message.chat.id)
         await message.answer("Исполнитель подтвердил заказ!")
-        await confirm_order(customer_id,executor_id,message.chat.id)
+        await confirm_order(customer_id, executor_id, message.chat.id)
     elif message.from_user.id == customer_id:
         Database.agree_customer(message.chat.id)
         await message.answer("Заказчик подтвердил заказ!")
-        await confirm_order(customer_id,executor_id,message.chat.id)
+        await confirm_order(customer_id, executor_id, message.chat.id)
 
 
 @dp.message_handler(commands=['arbitrage'], chat_type=[types.ChatType.SUPERGROUP, types.ChatType.GROUP])
 async def group_arbitrage_handler(message: types.Message):
     await message.answer("Заявка на арбитраж отправлена!\nВам перезвонят!")
-    await bot.send_message(config.admin_chat_id, f"Заявка на арбитраж в группе {message.chat.id}\nСсылка на группу {message.chat.invite_link}")
+    await bot.send_message(config.admin_chat_id,
+                           f"Заявка на арбитраж в группе {message.chat.id}\nСсылка на группу {message.chat.invite_link}")
 
 
 @dp.message_handler(commands=['done'], chat_type=[types.ChatType.SUPERGROUP, types.ChatType.GROUP])
@@ -50,7 +52,11 @@ async def group_done_handler(message: types.Message):
     customer_id = Database.get_customer_id_by_group_id(message.chat.id)
     if message.from_user.id == customer_id:
         await message.answer("Заказ выполнен успешно!\nИсполнитель получает лаве")
-        Database.done_order_from_group(message.chat.id)
+        executor_id = Database.get_executor_id_by_group_id(group_id=message.chat.id)
+        confirmed_order = Database.get_confirmed_order(group_id=message.chat.id)
+        new_balance = confirmed_order[1] + Database.get_balance(executor_id)
+        Database.update_balance(executor_id, new_balance)
+        Database.clear_by_group(message.chat.id, confirmed_order[0], Database.get_order_by_group_id(message.chat.id)[0])
 
 
 @dp.message_handler(chat_type=[types.ChatType.SUPERGROUP, types.ChatType.GROUP])

@@ -2,7 +2,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.types import CallbackQuery, ChatPermissions
+from aiogram.types import CallbackQuery
 
 from InlineMarkups import Choose_Order_Markup
 from InlineMarkups import Choose_Reviews_Markup
@@ -129,7 +129,8 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
         Database.add_review_group(chat_id, review_id)
         await callback_query.message.answer(f'Для начала общения с заказчиком войдите в группу по ссылке:\n{url}',
                                             reply_markup=customer_menu_markup)
-        await bot.send_message(chat_id=executor_id,text=f"Ваш отклик понравился заказчику!!!\nДля начала общения перейдите в группу по ссылке:\n{url}")
+        await bot.send_message(chat_id=executor_id,
+                               text=f"Ваш отклик понравился заказчику!!!\nДля начала общения перейдите в группу по ссылке:\n{url}")
 
 
 @dp.message_handler(state=GetOrderReviewsForm.ReviewSelect)

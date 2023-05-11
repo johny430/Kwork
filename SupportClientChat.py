@@ -1,5 +1,5 @@
 from telethon import TelegramClient, functions
-from telethon.tl.functions.messages import CreateChatRequest, EditChatAdminRequest, SetHistoryTTLRequest
+from telethon.tl.functions.messages import CreateChatRequest, EditChatAdminRequest
 
 from config import phone_number, cloud_password, bot_username, bot_id
 

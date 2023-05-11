@@ -46,7 +46,9 @@ class BotDB:
         return self.conn.commit()
 
     def get_order_by_group_id(self, group_id):
-        results = self.cursor.execute("select * from orders where id = (select order_id from order_review where id = (select review_id from review_group where chat_id = (?)))", (group_id,))
+        results = self.cursor.execute(
+            "select * from orders where id = (select order_id from order_review where id = (select review_id from review_group where chat_id = (?)))",
+            (group_id,))
         return results.fetchone()
 
     def get_orders_by_customer_id(self, customer_id):
@@ -58,7 +60,6 @@ class BotDB:
         """Получаем заказ из базы"""
         results = self.cursor.execute("SELECT * FROM orders WHERE order_category = (?)", (order_category,))
         return results.fetchall()
-
 
     def get_profile(self, profile_category):
         """Получаем профили из базы"""
@@ -147,14 +148,27 @@ class BotDB:
                                      (group_id,))
         return result.fetchone()[0]
 
-
     def zero_conformation(self, group_id):
-        self.cursor.execute("update review_group set executor_agree = 0, executor_agree = 0  where chat_id = (?);", (group_id,))
+        self.cursor.execute("update review_group set executor_agree = 0, executor_agree = 0  where chat_id = (?);",
+                            (group_id,))
         return self.conn.commit()
-
 
     def get_review_by_group(self, group_id):
         results = self.cursor.execute(
             "SELECT * from order_review where id = (SELECT review_id from review_group where chat_id = (?))",
             (group_id,))
         return results.fetchone()[0]
+
+    def get_confirmed_order(self, group_id):
+        results = self.cursor.execute(
+            "SELECT * from confirmed_orders where group_review_id = (SELECT id from review_group where chat_id = (?))",
+            (group_id,))
+        return results.fetchone()[0]
+
+    def clear_by_group(self, group_id, confirmed_order_id, order_id):
+        self.cursor.execute("DELETE FROM confirmed_orders WHERE id=(?)", confirmed_order_id)
+        self.cursor.execute("DELETE FROM messages WHERE chat_id=(?)", (group_id,))
+        self.cursor.execute("DELETE FROM review_group WHERE chat_id=(?)", (group_id,))
+        self.cursor.execute("DELETE FROM orders WHERE id=(?)", (order_id,))
+        self.cursor.execute("DELETE FROM order_review WHERE order_id=(?)", (order_id,))
+        self.conn.commit()

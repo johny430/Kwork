@@ -4,9 +4,8 @@ from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import ContentTypes
 
-from Markups import back_cancel_markup, customer_menu_markup, tz_markup, category_markup
+from Markups import back_cancel_markup, customer_menu_markup, category_markup
 from main import bot, Database, dp
-
 
 
 # Класс для фиксации состояний
@@ -71,8 +70,10 @@ async def order_place_name(message: types.Message, state: FSMContext):
     else:
         async with state.proxy() as data_storage:
             data_storage["category"] = message.text
-        await bot.send_message(message.chat.id, "Каков срок исполнения заказа(в днях)?", reply_markup=back_cancel_markup)
+        await bot.send_message(message.chat.id, "Каков срок исполнения заказа(в днях)?",
+                               reply_markup=back_cancel_markup)
         await OrderForm.Deadline.set()
+
 
 @dp.message_handler(state=OrderForm.Deadline)
 async def order_place_deadline(message: types.Message, state: FSMContext):
@@ -89,6 +90,7 @@ async def order_place_deadline(message: types.Message, state: FSMContext):
         await OrderForm.Description.set()
     else:
         await bot.send_message(message.chat.id, "Введите корректное число!:", reply_markup=back_cancel_markup)
+
 
 # handler который принимает описание заказа
 @dp.message_handler(state=OrderForm.Description)

@@ -47,7 +47,7 @@ async def search_orders(message: types.Message, state: FSMContext):
             id = str(results[0][0])
             price = str(results[0][2])
             message_text = f'{id}. {results[0][1]}\nЦена: {price}\nСрок выполнения: {results[0][4]} дней\nОписание: {results[0][5]}\n'
-            await bot.send_message(message.chat.id,"Список доступных Заказов:", reply_markup=back_cancel_markup)
+            await bot.send_message(message.chat.id, "Список доступных Заказов:", reply_markup=back_cancel_markup)
             await bot.send_message(message.chat.id, message_text, reply_markup=Choose_Order_Markup)
             await GetOrderForm.OrderSelect.set()
 
@@ -92,6 +92,7 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
         await callback_query.message.answer(text="За какой промежуток времени вы выполните заказ (в днях) ?",
                                             reply_markup=back_cancel_markup)
         await GetOrderForm.Deadline.set()
+
 
 @dp.message_handler(state=GetOrderForm.OrderSelect)
 async def order_place_name(message: types.Message, state: FSMContext):

@@ -75,9 +75,11 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
                                                 reply_markup=executor_menu_markup)
             await state.finish()
         else:
-            await callback_query.message.answer('Выберите понравшийся отклик на профиль', reply_markup=back_cancel_markup)
+            await callback_query.message.answer('Выберите понравшийся отклик на профиль',
+                                                reply_markup=back_cancel_markup)
             message_text_reviews = f'Номер: {reviews[0][0]}\nПредложенный срок (в днях): {reviews[0][2]} \nПредложенная сумма: {reviews[0][3]} USDT\nОписание: {reviews[0][4]}\n\n'
             await callback_query.message.answer(message_text_reviews, reply_markup=Choose_Profile_Reviews_Markup)
+
 
 @dp.callback_query_handler(Text(equals='previous_tz'), state=GetProfileReviewsForm.TzSelect)
 async def previous_result(callback_query: CallbackQuery, state: FSMContext):
@@ -114,11 +116,10 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
 
 
-
 @dp.message_handler(state=GetProfileReviewsForm.ProfileReviewSelect)
 async def order_place_name(message: types.Message, state: FSMContext):
     if message.text == "Назад":
-        await message.answer("Меню:", reply_markup= executor_menu_markup)
+        await message.answer("Меню:", reply_markup=executor_menu_markup)
         await state.finish()
     elif message.text == "Отмена":
         await message.answer("Меню:", reply_markup=executor_menu_markup)
