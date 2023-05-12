@@ -121,13 +121,13 @@ async def confirm_result_profile(callback_query: CallbackQuery, state: FSMContex
             reviews = data_storage["reviews_data"][data_storage["reviews_index"]]
             executor_id = callback_query.message.from_user.id
             customer_id = data_storage["reviews_data"][data_storage["reviews_index"]][5]
-            Database.convert_profile(reviews[3],reviews[2],customer_id)
+            Database.convert_profile(reviews[2],reviews[3],customer_id)
             order_id = Database.get_order_id(customer_id)
-            Database.convert_review(order_id, reviews[3],reviews[2],executor_id)
+            Database.convert_review(order_id, reviews[2],reviews[3],executor_id)
             url, chat_id = await Chat.create_group_chat_with_link(f"Заказ номер {customer_id} : {executor_id}")
             review_id = Database.get_review_id(order_id)
             Database.add_review_group(chat_id, review_id)
-            await callback_query.message.answer(f'Для начала общения с исполнителем войдите в группу по ссылке:\n{url}',
+            await callback_query.message.answer(f'Для начала общения с заказчиком войдите в группу по ссылке:\n{url}',
                                                 reply_markup=executor_menu_markup)
             await bot.send_message(chat_id=customer_id,
                                    text=f"Ваш отклик понравился исполнителю!!!\nДля начала общения перейдите в группу по ссылке:\n{url}")
