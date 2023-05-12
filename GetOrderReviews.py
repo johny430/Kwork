@@ -130,6 +130,7 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
                                             reply_markup=customer_menu_markup)
         await bot.send_message(chat_id=executor_id,
                                text=f"Ваш отклик понравился заказчику!!!\nДля начала общения перейдите в группу по ссылке:\n{url}")
+        await state.finish()
 
 
 @dp.message_handler(state=GetOrderReviewsForm.ReviewSelect)

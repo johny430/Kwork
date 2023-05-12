@@ -28,7 +28,7 @@ async def order_place(message: types.Message, state: FSMContext):
             data_storage["message_id"] = message.message_id
         id = str(results[0][0])
         price = str(results[0][4])
-        message_text = f'{id}. Специальность: {results[0][2]}\n Цена в час: {price} USDT\n Описание: {results[0][3]}\n'
+        message_text = f'{id}. Специальность: {results[0][2]}\n Цена в час: {price} USDT\n Описание: {results[0][5]}\n'
         await bot.send_message(message.chat.id, 'Список Ваших анкет:', reply_markup=back_cancel_markup)
         await bot.send_message(message.chat.id, message_text, reply_markup=Choose_Profile_Markup)
         await GetProfileReviewsForm.ProfileReviewSelect.set()
@@ -44,7 +44,7 @@ async def previous_result(callback_query: CallbackQuery, state: FSMContext):
         index -= 1
         data_storage["index"] = index
         data = data_storage["data"][index]
-        message_text = f'{data[0]}. Специальность: {data[2]}\n Цена в час: {data[4]} USDT\n Описание: {data[3]}\n'
+        message_text = f'{data[0]}. Специальность: {data[2]}\n Цена в час: {data[4]} USDT\n Описание: {data[5]}\n'
         await callback_query.message.edit_text(text=message_text, reply_markup=Choose_Profile_Markup)
 
 
@@ -59,7 +59,7 @@ async def next_result(callback_query: CallbackQuery, state: FSMContext):
         index += 1
         data_storage["index"] = index
         data = data_storage["data"][index]
-        message_text = f'{data[0]}. Специальность: {data[2]}\n Цена в час: {data[4]} USDT\n Описание: {data[3]}\n'
+        message_text = f'{data[0]}. Специальность: {data[2]}\n Цена в час: {data[4]} USDT\n Описание: {data[5]}\n'
         await callback_query.message.edit_text(text=message_text, reply_markup=Choose_Profile_Markup)
 
 
@@ -95,7 +95,7 @@ async def previous_result(callback_query: CallbackQuery, state: FSMContext):
         index -= 1
         data_storage["reviews_index"] = index
         reviews = data_storage["reviews_data"][index]
-        message_text_reviews = f'Номер: {reviews[0]}\nПредложенный срок: {reviews[2]} дня\nПредложенная сумма: {reviews[3]} USDT\nОписание: {reviews[4]}'
+        message_text_reviews = f'Номер: {reviews[0]}\nПредложенный срок(в днях): {reviews[2]} \nПредложенная сумма: {reviews[3]} USDT\nОписание: {reviews[4]}'
         await callback_query.message.edit_text(text=message_text_reviews, reply_markup=Choose_Tz_Markup)
 
 
@@ -119,14 +119,15 @@ async def confirm_result_profile(callback_query: CallbackQuery, state: FSMContex
         await callback_query.answer()
         async with state.proxy() as data_storage:
             executor_id = callback_query.message.from_user.id
-            customer_id = data_storage["reviews_data"][data_storage["reviews_index"]][3]
+            customer_id = data_storage["reviews_data"][data_storage["reviews_index"]][5]
             url, chat_id = await Chat.create_group_chat_with_link(f"Заказ номер {customer_id} : {executor_id}")
             review_id = data_storage["reviews_data"][data_storage["reviews_index"]][0]
             Database.add_review_group(chat_id, review_id)
             await callback_query.message.answer(f'Для начала общения с исполнителем войдите в группу по ссылке:\n{url}',
                                                 reply_markup=executor_menu_markup)
-            await bot.send_message(chat_id=executor_id,
+            await bot.send_message(chat_id=customer_id,
                                    text=f"Ваш отклик понравился исполнителю!!!\nДля начала общения перейдите в группу по ссылке:\n{url}")
+            await state.finish()
 
 
 @dp.message_handler(state=GetProfileReviewsForm.ProfileReviewSelect)

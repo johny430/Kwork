@@ -45,8 +45,8 @@ async def search_profile(message: types.Message, state: FSMContext):
                 data_storage["data"] = results
                 data_storage["message_id"] = message.message_id
             id = str(results[0][0])
-            price = str(results[0][2])
-            message_text = f'{id}. Специальность: {results[0][3]}\n Цена в час: {price}\n Описание: {results[0][3]}\n'
+            price = str(results[0][4])
+            message_text = f'{id}. Специальность: {results[0][2]}\n Цена в час: {price}\n Описание: {results[0][5]}\n'
             await bot.send_message(message.chat.id, 'Список доступных исполнителей:', reply_markup=back_cancel_markup)
             await bot.send_message(message.chat.id, message_text, reply_markup=Choose_Profile_Markup)
             await GetProfileForm.ProfileSelect.set()
@@ -62,7 +62,7 @@ async def previous_result(callback_query: CallbackQuery, state: FSMContext):
         index -= 1
         data_storage["index"] = index
         data = data_storage["data"][index]
-        message_text = f'{data[0]}. Специальность: {data[3]}\n Цена в час: {data[2]} USDT\n Описание: {data[3]}\n'
+        message_text = f'{data[0]}. Специальность: {data[2]}\n Цена в час: {data[4]} USDT\n Описание: {data[5]}\n'
         await callback_query.message.edit_text(text=message_text, reply_markup=Choose_Profile_Markup)
 
 
@@ -77,7 +77,7 @@ async def next_result(callback_query: CallbackQuery, state: FSMContext):
         index += 1
         data_storage["index"] = index
         data = data_storage["data"][index]
-        message_text = f'{data[0]}. Специальность: {data[3]}\n Цена в час: {data[2]} USDT\n Описание: {data[3]}\n'
+        message_text = f'{data[0]}. Специальность: {data[2]}\n Цена в час: {data[4]} USDT\n Описание: {data[5]}\n'
         await callback_query.message.edit_text(text=message_text, reply_markup=Choose_Profile_Markup)
 
 
@@ -87,7 +87,7 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
     async with state.proxy() as data_storage:
         index = data_storage["index"]
         data = data_storage["data"][index]
-        message_text = f'Специальность: {data[1]}\n Цена в час: {data[2]}\n Описание: {data[3]}\n'
+        message_text = f'Специальность: {data[2]}\n Цена в час: {data[4]}\n Описание: {data[5]}\n'
         await callback_query.message.edit_text(text=message_text)
         await callback_query.message.answer(text="Каков срок исполнения заказа(в днях)?",
                                             reply_markup=back_cancel_markup)

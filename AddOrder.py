@@ -123,8 +123,8 @@ async def order_place_name(message: types.Message, state: FSMContext):
             category = data_storage["category"]
             deadline = data_storage["deadline"]
             description = data_storage["description"]
-            message_text = f"Название: {name}\nЦена: {price} USDT\nКатегория: {category}\nСрок выполнения: {deadline}\nОписание:{description}"
-            await bot.send_message(message.chat.id, "Заказ успешно добавлен!\nДанные закаказа:" + message_text)
+            message_text = f"Название: {name}\nЦена: {price} USDT\nКатегория: {category}\nСрок выполнения(в днях): {deadline}\nОписание:{description}"
+            await bot.send_message(message.chat.id, "Заказ успешно добавлен!\nДанные закаказа:\n" + message_text)
             await bot.send_message(message.chat.id, "Меню", reply_markup=customer_menu_markup)
             Database.add_order(name, price, category, deadline, description, message.from_user.id)
             await state.finish()

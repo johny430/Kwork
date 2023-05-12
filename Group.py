@@ -10,20 +10,20 @@ from main import dp
 async def confirm_order(customer_id, executor_id, group_id):
     if Database.conformation_count(group_id) == 2:
         await bot.send_message(group_id, "Заказ подтвержден!!!")
-        order = Database.get_order_by_group_id(group_id)
         customer_balance = Database.get_balance(customer_id)
         review = Database.get_review_by_group(group_id)
+        group_review_id = Database.get_review_group_id(group_id)
         price = review[3] * (1 + config.commision)
         if price > customer_balance:
             await bot.send_message(group_id,
-                                   "У заказчика недостаточно средств!\nПополните баланс через бота и подтвердите заказ снова!\nТребуемая сумма {price} usdt!")
+                                   f"У заказчика недостаточно средств!\nПополните баланс через бота и подтвердите заказ снова!\nТребуемая сумма {price} usdt!")
             Database.zero_conformation(group_id)
         else:
             new_balance = customer_balance - price
             Database.update_balance(customer_id, new_balance)
-            Database.confirm_order_from_group(group_id)
+            Database.confirm_order_from_group(review[3],group_review_id[0])
             await bot.send_message(group_id,
-                                   f"Заказ подтвержден!\nСрок выполнения(в днях): {review[1]}\nНаграда исполнителя {review[2]} usdt")
+                                   f"Заказ подтвержден!\nСрок выполнения(в днях): {review[2]}\nНаграда исполнителя {review[3]} usdt")
 
 
 @dp.message_handler(commands=['confirm'], chat_type=[types.ChatType.SUPERGROUP, types.ChatType.GROUP])

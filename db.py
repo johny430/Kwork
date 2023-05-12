@@ -163,12 +163,23 @@ class BotDB:
         results = self.cursor.execute(
             "SELECT * from confirmed_orders where group_review_id = (SELECT id from review_group where chat_id = (?))",
             (group_id,))
-        return results.fetchone()[0]
+        return results.fetchone()
 
     def clear_by_group(self, group_id, confirmed_order_id, order_id):
-        self.cursor.execute("DELETE FROM confirmed_orders WHERE id=(?)", confirmed_order_id)
+        # self.cursor.execute("DELETE FROM confirmed_orders WHERE id=(?)", confirmed_order_id)
         self.cursor.execute("DELETE FROM messages WHERE chat_id=(?)", (group_id,))
         self.cursor.execute("DELETE FROM review_group WHERE chat_id=(?)", (group_id,))
         self.cursor.execute("DELETE FROM orders WHERE id=(?)", (order_id,))
         self.cursor.execute("DELETE FROM order_review WHERE order_id=(?)", (order_id,))
         self.conn.commit()
+
+    def get_review_group_id(self, group_id):
+        results = self.cursor.execute(
+            "SELECT id from review_group where chat_id = ((?))",
+            (group_id,))
+        return results.fetchone()
+
+    def confirm_order_from_group(self, reward, group_review_id):
+        self.cursor.execute("insert into confirmed_orders (reward, group_review_id) values (?,?)",
+                            (reward, group_review_id))
+        return self.conn.commit()
