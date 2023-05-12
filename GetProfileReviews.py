@@ -118,10 +118,14 @@ async def next_result(callback_query: CallbackQuery, state: FSMContext):
 async def confirm_result_profile(callback_query: CallbackQuery, state: FSMContext):
         await callback_query.answer()
         async with state.proxy() as data_storage:
+            reviews = data_storage["reviews_data"][data_storage["reviews_index"]]
             executor_id = callback_query.message.from_user.id
             customer_id = data_storage["reviews_data"][data_storage["reviews_index"]][5]
+            Database.convert_profile(reviews[3],reviews[2],customer_id)
+            order_id = Database.get_order_id(customer_id)
+            Database.convert_review(order_id, reviews[3],reviews[2],executor_id)
             url, chat_id = await Chat.create_group_chat_with_link(f"Заказ номер {customer_id} : {executor_id}")
-            review_id = data_storage["reviews_data"][data_storage["reviews_index"]][0]
+            review_id = Database.get_review_id(order_id)
             Database.add_review_group(chat_id, review_id)
             await callback_query.message.answer(f'Для начала общения с исполнителем войдите в группу по ссылке:\n{url}',
                                                 reply_markup=executor_menu_markup)

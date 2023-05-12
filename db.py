@@ -12,6 +12,10 @@ class BotDB:
         result = self.cursor.execute("SELECT `id` FROM `account` WHERE `user_id` = (?)", (user_id,))
         return not bool(result.fetchone() is None)
 
+    def get_order_id(self, customer_id):
+        result = self.cursor.execute("select id from orders where customer_id = (?) order by id desc limit 0,1", (customer_id,))
+        return result.fetchone()[0]
+
     def get_balance(self, user_id):
         """Достаем баланс в базе по его user_id"""
         result = self.cursor.execute("select balance from account where user_id = (?)", (user_id,))
@@ -183,3 +187,17 @@ class BotDB:
         self.cursor.execute("insert into confirmed_orders (reward, group_review_id) values (?,?)",
                             (reward, group_review_id))
         return self.conn.commit()
+
+    def convert_profile(self, order_price, order_deadline, customer_id):
+        self.cursor.execute("insert into orders (order_price, order_deadline, customer_id) values (?,?,?)",(order_price,order_deadline,customer_id))
+        return self.conn.commit()
+
+    def convert_review(self,order_id, order_price, order_deadline, executor_id):
+        self.cursor.execute("insert into order_review (order_id, cost, dedline, executor_id) values (?,?,?,?)",(order_id, order_price,order_deadline,executor_id))
+        return self.conn.commit()
+
+    def  get_review_id(self, order_id):
+        results = self.cursor.execute(
+            "SELECT id from order_review where order_id = (?)",
+            (order_id,))
+        return results.fetchone()[0]
