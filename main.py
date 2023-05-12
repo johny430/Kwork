@@ -17,7 +17,7 @@ bot = Bot(token=Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
-# Chat = SupportClientChat(api_id, api_hash, "ssss")
+Chat = SupportClientChat(api_id, api_hash,"ssss")
 
 
 from general import *
@@ -34,7 +34,7 @@ from GetOrderReviews import *
 
 
 async def main():
-    #await Chat.client_start()
+    await Chat.client_start()
     await dp.start_polling(bot)
 
 

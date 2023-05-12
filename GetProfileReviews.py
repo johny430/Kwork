@@ -6,7 +6,7 @@ from aiogram.types import CallbackQuery
 
 from InlineMarkups import Choose_Profile_Markup, Choose_Profile_Reviews_Markup, Choose_Tz_Markup
 from Markups import executor_menu_markup, back_cancel_markup
-from main import bot, Database, dp
+from main import bot, Database, Chat, dp
 
 
 # Класс для фиксации состояний
@@ -20,7 +20,7 @@ class GetProfileReviewsForm(StatesGroup):
 async def order_place(message: types.Message, state: FSMContext):
     results = Database.get_profile_for(message.from_user.id)
     if len(results) == 0:
-        await message.answer("На вашу анкету еще не откликались!\nМеню", reply_markup=executor_menu_markup)
+        await message.answer("У вас ещё нет анкет.\nМеню", reply_markup=executor_menu_markup)
     else:
         async with state.proxy() as data_storage:
             data_storage["index"] = 0
@@ -75,10 +75,13 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
                                                 reply_markup=executor_menu_markup)
             await state.finish()
         else:
+            data_storage["reviews_data"] = reviews
+            data_storage["reviews_index"] = 0
             await callback_query.message.answer('Выберите понравшийся отклик на профиль',
                                                 reply_markup=back_cancel_markup)
-            message_text_reviews = f'Номер: {reviews[0][0]}\nПредложенный срок (в днях): {reviews[0][2]} \nПредложенная сумма: {reviews[0][3]} USDT\nОписание: {reviews[0][4]}\n\n'
-            await callback_query.message.answer(message_text_reviews, reply_markup=Choose_Profile_Reviews_Markup)
+            message_text_reviews = f'Номер: {reviews[0][0]}\nПредложенный срок (в днях): {reviews[0][2]} \nПредложенная сумма: {reviews[0][3]} USDT\nОписание: {reviews[0][4]}'
+            await callback_query.message.answer(message_text_reviews, reply_markup=Choose_Tz_Markup)
+            await GetProfileReviewsForm.ProfileReviewSelect.set()
 
 
 @dp.callback_query_handler(Text(equals='previous_tz'), state=GetProfileReviewsForm.ProfileReviewSelect)
@@ -92,7 +95,7 @@ async def previous_result(callback_query: CallbackQuery, state: FSMContext):
         index -= 1
         data_storage["reviews_index"] = index
         reviews = data_storage["reviews_data"][index]
-        message_text_reviews = f'Номер: {reviews[0][0]}\nПредложенный срок: {reviews[0][2]} дня\nПредложенная сумма: {reviews[0][3]} USDT\nОписание: {reviews[0][4]}'
+        message_text_reviews = f'Номер: {reviews[0]}\nПредложенный срок: {reviews[2]} дня\nПредложенная сумма: {reviews[3]} USDT\nОписание: {reviews[4]}'
         await callback_query.message.edit_text(text=message_text_reviews, reply_markup=Choose_Tz_Markup)
 
 
@@ -107,7 +110,7 @@ async def next_result(callback_query: CallbackQuery, state: FSMContext):
         index += 1
         data_storage["reviews_index"] = index
         reviews = data_storage["reviews_data"][index]
-        message_text_reviews = f'Номер: {reviews[0][0]}\nПредложенный срок (в днях): {reviews[0][2]} \nПредложенная сумма: {reviews[0][3]} USDT\nОписание: {reviews[0][4]}'
+        message_text_reviews = f'Номер: {reviews[0]}\nПредложенный срок (в днях): {reviews[2]} \nПредложенная сумма: {reviews[3]} USDT\nОписание: {reviews[4]}'
         await callback_query.message.edit_text(text=message_text_reviews, reply_markup=Choose_Tz_Markup)
 
 
@@ -120,10 +123,10 @@ async def confirm_result_profile(callback_query: CallbackQuery, state: FSMContex
             url, chat_id = await Chat.create_group_chat_with_link(f"Заказ номер {customer_id} : {executor_id}")
             review_id = data_storage["reviews_data"][data_storage["reviews_index"]][0]
             Database.add_review_group(chat_id, review_id)
-            await callback_query.message.answer(f'Для начала общения с заказчиком войдите в группу по ссылке:\n{url}',
+            await callback_query.message.answer(f'Для начала общения с исполнителем войдите в группу по ссылке:\n{url}',
                                                 reply_markup=executor_menu_markup)
             await bot.send_message(chat_id=executor_id,
-                                   text=f"Ваш отклик понравился заказчику!!!\nДля начала общения перейдите в группу по ссылке:\n{url}")
+                                   text=f"Ваш отклик понравился исполнителю!!!\nДля начала общения перейдите в группу по ссылке:\n{url}")
 
 
 @dp.message_handler(state=GetProfileReviewsForm.ProfileReviewSelect)

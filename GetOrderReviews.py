@@ -8,7 +8,7 @@ from InlineMarkups import Choose_Order_Markup
 from InlineMarkups import Choose_Reviews_Markup
 from Markups import back_cancel_markup
 from Markups import customer_menu_markup
-# from main import Chat
+from main import Chat
 from main import Database
 from main import bot
 from main import dp
@@ -91,7 +91,6 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
 @dp.callback_query_handler(Text(equals='previous_reviews'), state=GetOrderReviewsForm.ReviewSelect)
 async def previous_result(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
-    print("gay")
     async with state.proxy() as data_storage:
         index = data_storage["reviews_index"]
         if index == 0:
@@ -99,7 +98,7 @@ async def previous_result(callback_query: CallbackQuery, state: FSMContext):
         index -= 1
         data_storage["reviews_index"] = index
         reviews = data_storage["reviews_data"][index]
-        message_text_reviews = f'Номер: {reviews[0][0]}\nПредложенный срок: {reviews[0][2]} дня\nПредложенная сумма: {reviews[0][3]} USDT\nОписание: {reviews[0][4]}'
+        message_text_reviews = f'Номер: {reviews[0]}\nПредложенный срок: {reviews[2]} дня\nПредложенная сумма: {reviews[3]} USDT\nОписание: {reviews[4]}'
         await callback_query.message.edit_text(text=message_text_reviews, reply_markup=Choose_Reviews_Markup)
 
 
@@ -109,12 +108,12 @@ async def next_result(callback_query: CallbackQuery, state: FSMContext):
     async with state.proxy() as data_storage:
         size = len(data_storage["reviews_data"])
         index = data_storage["reviews_index"]
-        if index == size - 1:
+        if index == size - 1 :
             return
         index += 1
         data_storage["reviews_index"] = index
         reviews = data_storage["reviews_data"][index]
-        message_text_reviews = f'Номер: {reviews[0][0]}\nПредложенный срок: {reviews[0][2]} дня\nПредложенная сумма: {reviews[0][3]} USDT\nОписание: {reviews[0][4]}'
+        message_text_reviews = f'Номер: {reviews[0]}\nПредложенный срок: {reviews[2]} дня\nПредложенная сумма: {reviews[3]} USDT\nОписание: {reviews[4]}'
         await callback_query.message.edit_text(text=message_text_reviews, reply_markup=Choose_Reviews_Markup)
 
 
