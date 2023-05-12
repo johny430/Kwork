@@ -122,7 +122,7 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
     await callback_query.answer()
     async with state.proxy() as data_storage:
         customer_id = callback_query.message.from_user.id
-        executor_id = data_storage["reviews_data"][data_storage["reviews_index"]][3]
+        executor_id = data_storage["reviews_data"][data_storage["reviews_index"]][5]
         url, chat_id = await Chat.create_group_chat_with_link(f"Заказ номер {customer_id} : {executor_id}")
         review_id = data_storage["reviews_data"][data_storage["reviews_index"]][0]
         Database.add_review_group(chat_id, review_id)

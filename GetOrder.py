@@ -62,7 +62,7 @@ async def previous_result(callback_query: CallbackQuery, state: FSMContext):
         index -= 1
         data_storage["index"] = index
         data = data_storage["data"][index]
-        message_text = f'{data[1]}\nЦена: {str(data[2])}\nОписание: {str(data[3])}\n'
+        message_text = f'{data[0]}. {data[1]}\nЦена: {data[2]}\nСрок выполнения: {data[4]} дней\nОписание: {data[5]}\n'
         await callback_query.message.edit_text(text=message_text, reply_markup=Choose_Order_Markup)
 
 
@@ -77,7 +77,7 @@ async def next_result(callback_query: CallbackQuery, state: FSMContext):
         index += 1
         data_storage["index"] = index
         data = data_storage["data"][index]
-        message_text = f'{data[1]}\nЦена: {str(data[2])}\nОписание: {str(data[3])}\n'
+        message_text = f'{data[0]}. {data[1]}\nЦена: {data[2]}\nСрок выполнения: {data[4]} дней\nОписание: {data[5]}\n'
         await callback_query.message.edit_text(text=message_text, reply_markup=Choose_Order_Markup)
 
 
@@ -87,7 +87,7 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
     async with state.proxy() as data_storage:
         index = data_storage["index"]
         data = data_storage["data"][index]
-        message_text = f'Вы выбрали:\n{data[1]}\nЦена: {str(data[2])}\nОписание: {str(data[3])}'
+        message_text = f'Вы выбрали:\n{data[1]}\nЦена: {data[2]}\nСрок выполнения: {data[4]} дней\nОписание: {data[5]}\n'
         await callback_query.message.edit_text(text=message_text)
         await callback_query.message.answer(text="За какой промежуток времени вы выполните заказ (в днях) ?",
                                             reply_markup=back_cancel_markup)

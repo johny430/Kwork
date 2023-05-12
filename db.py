@@ -157,7 +157,7 @@ class BotDB:
         results = self.cursor.execute(
             "SELECT * from order_review where id = (SELECT review_id from review_group where chat_id = (?))",
             (group_id,))
-        return results.fetchone()[0]
+        return results.fetchone()
 
     def get_confirmed_order(self, group_id):
         results = self.cursor.execute(
