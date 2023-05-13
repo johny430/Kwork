@@ -203,7 +203,7 @@ class BotDB:
         return results.fetchone()[0]
 
     def update_review_price(self,review_id,new_price):
-        self.cursor.execute(f"update order_review set price = {new_price }where id = {review_id}")
+        self.cursor.execute(f"update order_review set cost = {new_price} where id = {review_id}")
         return self.conn.commit()
 
 

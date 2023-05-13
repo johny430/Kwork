@@ -49,35 +49,38 @@ async def group_arbitrage_handler(message: types.Message):
 
 @dp.message_handler(commands=['done'], chat_type=[types.ChatType.SUPERGROUP, types.ChatType.GROUP])
 async def group_done_handler(message: types.Message):
-    customer_id = Database.get_customer_id_by_group_id(message.chat.id)
-    if message.from_user.id == customer_id:
-        await message.answer("Заказ выполнен успешно!\nИсполнитель получает лаве")
-        executor_id = Database.get_executor_id_by_group_id(group_id=message.chat.id)
-        confirmed_order = Database.get_confirmed_order(group_id=message.chat.id)
-        new_balance = confirmed_order[1] + Database.get_balance(executor_id)
-        Database.update_balance(executor_id, new_balance)
-        Database.clear_by_group(message.chat.id, confirmed_order[0], Database.get_order_by_group_id(message.chat.id)[0])
+    if Database.conformation_count(message.chat.id) == 2:
+        customer_id = Database.get_customer_id_by_group_id(message.chat.id)
+        if message.from_user.id == customer_id:
+            await message.answer("Заказ выполнен успешно!\nИсполнитель получает лаве")
+            executor_id = Database.get_executor_id_by_group_id(group_id=message.chat.id)
+            confirmed_order = Database.get_confirmed_order(group_id=message.chat.id)
+            new_balance = confirmed_order[1] + Database.get_balance(executor_id)
+            Database.update_balance(executor_id, new_balance)
+            Database.clear_by_group(message.chat.id, confirmed_order[0], Database.get_order_by_group_id(message.chat.id)[0])
+    else:
+        await message.answer("Заказ еще не подтвержден!\n Для подтверждения заказа исполнитель и закзачик должны воспользоваться командой /confirm")
 
 
 @dp.message_handler(commands=['set_price'], chat_type=[types.ChatType.SUPERGROUP, types.ChatType.GROUP])
 async def group_done_handler(message: types.Message):
     arguments = message.get_args()
-    if len(arguments) != 1:
-        await message.answer("Введите команду в формате /set_price 1 , где 1 - новая цена")
-    else:
-        price = arguments[0]
+    if arguments.isdigit():
+        price = int(arguments)
         Database.update_review_price(message.chat.id, price)
         await message.answer(f'Новая цена: {price} USDT')
+    else:
+        await message.answer("Введите команду в формате /set_price 1 , где 1 - новая цена")
 
-@dp.message_handler(commands=['set_dedline'], chat_type=[types.ChatType.SUPERGROUP, types.ChatType.GROUP])
+@dp.message_handler(commands=['set_deadline'], chat_type=[types.ChatType.SUPERGROUP, types.ChatType.GROUP])
 async def group_done_handler(message: types.Message):
     arguments = message.get_args()
-    if len(arguments) != 1:
-        await message.answer("Введите команду в формате /set_dedline 1 , где 1 - новый срок выполнения в днях")
+    if arguments.isdigit():
+        days = int(arguments)
+        Database.update_review_price(message.chat.id, days)
+        await message.answer(f'Новый срок исполнения(в днях): {days}')
     else:
-        deadline = arguments[0]
-        Database.update_review_dedline(message.chat.id, deadline)
-        await message.answer(f'Новый срок исполнения: {deadline}')
+        await message.answer("Введите команду в формате /set_price 1 , где 1 - новая цена")
 
 @dp.message_handler(chat_type=[types.ChatType.SUPERGROUP, types.ChatType.GROUP])
 async def group_handler(message: types.Message):
@@ -91,7 +94,16 @@ async def handle_join(message: types.Message):
     for user in message.new_chat_members:
         if user.id == executor_id:
             await message.answer(
-                "Исполнитель вошел в чат!\nДля подтверждения заказа ответьте на данное сообщение командой /confirm !\nЗаказ подтверждается при согласии обоих сторон!")
+                "Исполнитель вошел в чат!\n"
+                "Для подтверждения заказа ответьте на данное сообщение командой /confirm !\n"
+                "Заказ подтверждается при согласии обоих сторон!\n"
+                "В случае возникновения кофликтных ситуаций начните арбитраж командой /arbitrage"
+                "Чтобы предложить новые условия сотрудничества используйте команды /set_price и /set_deadline с указанием новой цены или срока полсе них")
         elif user.id == customer_id:
             await message.answer(
-                "Заказчик вошел в чат!\nДля подтверждения заказа ответьте на данное сообщение командой /confirm !\nЗаказ подтверждается при согласии обоих сторон!")
+                "Заказчик вошел в чат!\n"
+                "Для подтверждения заказа ответьте на данное сообщение командой /confirm !\n"
+                "Заказ подтверждается при согласии обоих сторон!\n"
+                "После успешного завершения заказа подтвердите его командой /done !\n"
+                "В случае возникновения кофликтных ситуаций начните арбитраж командой /arbitrage"
+                "Чтобы предложить новые условия сотрудничества используйте команды /set_price и /set_deadline с указанием новой цены или срока полсе них")

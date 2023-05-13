@@ -6,20 +6,19 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher.filters import ChatTypeFilter
 from telethon import events, Button
 
-from SupportClientChat import SupportClientChat
 from config import *
 from db import BotDB
+from SupportClientChat import SupportClientChat
 
 # инициализация базы данных
-Database = BotDB("Kworkk.db")
 # создание объектов бота и диспетчера
 bot = Bot(token=Token)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
-Chat = SupportClientChat(api_id, api_hash,"ssss")
+Chat = SupportClientChat(api_id, api_hash)
 
-
+Database = BotDB("Kworkk.db")
 from general import *
 from GetProfile import *
 from GetProfileReviews import *
