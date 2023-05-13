@@ -201,3 +201,12 @@ class BotDB:
             "SELECT id from order_review where order_id = (?)",
             (order_id,))
         return results.fetchone()[0]
+
+    def update_review_price(self,review_id,new_price):
+        self.cursor.execute(f"update order_review set price = {new_price }where id = {review_id}")
+        return self.conn.commit()
+
+
+    def update_review_dedline(self,review_id,new_dedline):
+        self.cursor.execute(f"update order_review set dedline = {new_dedline} where id = {review_id}")
+        return self.conn.commit()

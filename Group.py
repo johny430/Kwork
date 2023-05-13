@@ -59,6 +59,26 @@ async def group_done_handler(message: types.Message):
         Database.clear_by_group(message.chat.id, confirmed_order[0], Database.get_order_by_group_id(message.chat.id)[0])
 
 
+@dp.message_handler(commands=['set_price'], chat_type=[types.ChatType.SUPERGROUP, types.ChatType.GROUP])
+async def group_done_handler(message: types.Message):
+    arguments = message.get_args()
+    if len(arguments) != 1:
+        await message.answer("Введите команду в формате /set_price 1 , где 1 - новая цена")
+    else:
+        price = arguments[0]
+        Database.update_review_price(message.chat.id, price)
+        await message.answer(f'Новая цена: {price} USDT')
+
+@dp.message_handler(commands=['set_dedline'], chat_type=[types.ChatType.SUPERGROUP, types.ChatType.GROUP])
+async def group_done_handler(message: types.Message):
+    arguments = message.get_args()
+    if len(arguments) != 1:
+        await message.answer("Введите команду в формате /set_dedline 1 , где 1 - новый срок выполнения в днях")
+    else:
+        deadline = arguments[0]
+        Database.update_review_dedline(message.chat.id, deadline)
+        await message.answer(f'Новый срок исполнения: {deadline}')
+
 @dp.message_handler(chat_type=[types.ChatType.SUPERGROUP, types.ChatType.GROUP])
 async def group_handler(message: types.Message):
     Database.add_message(message.chat.id, message.text, message.from_user.id, message.date.strftime('%H:%M:%S'))
