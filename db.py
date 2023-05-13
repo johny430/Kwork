@@ -212,3 +212,15 @@ class BotDB:
     def update_review_dedline(self, review_id, new_dedline):
         self.cursor.execute(f"update order_review set dedline = {new_dedline} where id = {review_id}")
         return self.conn.commit()
+
+    def order_delet(self, order_id):
+        self.cursor.execute("DELETE FROM orders WHERE id=(?)", (order_id,))
+        self.cursor.execute("DELETE FROM order_review WHERE order_id=(?)", (order_id,))
+        return self.conn.commit()
+
+    def profile_delet(self,profile_id):
+        self.cursor.execute("DELETE FROM profile WHERE id=(?)", (profile_id,))
+        self.cursor.execute("DELETE FROM tz WHERE profile_id=(?)", (profile_id,))
+        return self.conn.commit()
+
+

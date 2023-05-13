@@ -154,7 +154,7 @@ async def withdraw_amount(message: types.Message, state: FSMContext):
             await BalanceForm.Check.set()
     elif message.text.isdigit():
         async with state.proxy() as data_storege:
-            if int(message.text) <= int(data_storege["money"]):
+            if int(message.text) <= int(data_storege["money"]) and int(data_storege["money"]) != 0 :
                 data_storege["amount"] = message.text
                 await bot.send_message(message.chat.id, "Введите ваш USDT кошелек в сети TRC20",
                                        reply_markup=back_cancel_markup)

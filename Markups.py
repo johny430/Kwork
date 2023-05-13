@@ -37,6 +37,10 @@ back_cancel_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 cancel = types.KeyboardButton("Отмена")
 back_cancel_markup.add(back, cancel)
 
+back_cancel_remove_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+remove = types.KeyboardButton("Удалить")
+back_cancel_remove_markup.add(back, remove, cancel)
+
 tz_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 skip = types.KeyboardButton("Пропустить")
 tz_markup.add(back, skip, cancel)
@@ -47,7 +51,6 @@ item10 = types.KeyboardButton("10")
 item25 = types.KeyboardButton("25")
 item50 = types.KeyboardButton("50")
 item100 = types.KeyboardButton("100")
-cancel = types.KeyboardButton("Отмена")
 amount_balance.add(item5, item10, item25, item50, item100, cancel)
 
 confirm_payment_markup = types.ReplyKeyboardMarkup(resize_keyboard=True)

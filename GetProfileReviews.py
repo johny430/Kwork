@@ -5,8 +5,8 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.types import CallbackQuery, chat
 
 from InlineMarkups import Choose_Profile_Markup, Choose_Tz_Markup
-from Markups import executor_menu_markup, back_cancel_markup
-from main import bot, Database, Chat, dp
+from Markups import executor_menu_markup, back_cancel_markup, back_cancel_remove_markup
+from main import bot, Chat, Database, dp
 
 
 # Класс для фиксации состояний
@@ -26,10 +26,11 @@ async def order_place(message: types.Message, state: FSMContext):
             data_storage["index"] = 0
             data_storage["data"] = results
             data_storage["message_id"] = message.message_id
+            data_storage["profile_id"] = results[0][0]
         id = str(results[0][0])
         price = str(results[0][4])
         message_text = f'{id}. Специальность: {results[0][2]}\n Цена в час: {price} USDT\n Описание: {results[0][5]}\n'
-        await bot.send_message(message.chat.id, 'Список Ваших анкет:', reply_markup=back_cancel_markup)
+        await bot.send_message(message.chat.id, 'Список Ваших анкет:', reply_markup=back_cancel_remove_markup)
         await bot.send_message(message.chat.id, message_text, reply_markup=Choose_Profile_Markup)
         await GetProfileReviewsForm.ProfileReviewSelect.set()
 
@@ -44,6 +45,7 @@ async def previous_result(callback_query: CallbackQuery, state: FSMContext):
         index -= 1
         data_storage["index"] = index
         data = data_storage["data"][index]
+        data_storage["profile_id"] = data[0]
         message_text = f'{data[0]}. Специальность: {data[2]}\n Цена в час: {data[4]} USDT\n Описание: {data[5]}\n'
         await callback_query.message.edit_text(text=message_text, reply_markup=Choose_Profile_Markup)
 
@@ -59,6 +61,7 @@ async def next_result(callback_query: CallbackQuery, state: FSMContext):
         index += 1
         data_storage["index"] = index
         data = data_storage["data"][index]
+        data_storage["profile_id"] = data[0]
         message_text = f'{data[0]}. Специальность: {data[2]}\n Цена в час: {data[4]} USDT\n Описание: {data[5]}\n'
         await callback_query.message.edit_text(text=message_text, reply_markup=Choose_Profile_Markup)
 
@@ -77,6 +80,7 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
         else:
             data_storage["reviews_data"] = reviews
             data_storage["reviews_index"] = 0
+            data_storage["profile_id"] = data[0]
             await callback_query.message.answer('Выберите понравшийся отклик на профиль',
                                                 reply_markup=back_cancel_markup)
             message_text_reviews = f'Номер: {reviews[0][0]}\nПредложенный срок (в днях): {reviews[0][2]} \nПредложенная сумма: {reviews[0][3]} USDT\nОписание: {reviews[0][4]}'
@@ -136,11 +140,17 @@ async def confirm_result_profile(callback_query: CallbackQuery, state: FSMContex
 
 @dp.message_handler(state=GetProfileReviewsForm.ProfileReviewSelect)
 async def order_place_name(message: types.Message, state: FSMContext):
-    if message.text == "Назад":
-        await message.answer("Меню:", reply_markup=executor_menu_markup)
-        await state.finish()
-    elif message.text == "Отмена":
-        await message.answer("Меню:", reply_markup=executor_menu_markup)
-        await state.finish()
-    else:
-        await message.answer("Введите корректное число!:")
+    async with state.proxy() as data_storage:
+        if message.text == "Назад":
+            await message.answer("Меню:", reply_markup=executor_menu_markup)
+            await state.finish()
+        elif message.text == "Удалить":
+            profile_id = data_storage["profile_id"]
+            Database.profile_delet(profile_id)
+            await message.answer("Ваша анкета успешна удалена", reply_markup=executor_menu_markup)
+            await state.finish()
+        elif message.text == "Отмена":
+            await message.answer("Меню:", reply_markup=executor_menu_markup)
+            await state.finish()
+        else:
+            await message.answer("Введите корректное значение!")
