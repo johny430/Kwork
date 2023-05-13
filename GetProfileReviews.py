@@ -119,7 +119,7 @@ async def confirm_result_profile(callback_query: CallbackQuery, state: FSMContex
         await callback_query.answer()
         async with state.proxy() as data_storage:
             reviews = data_storage["reviews_data"][data_storage["reviews_index"]]
-            executor_id = callback_query.message.from_user.id
+            executor_id = callback_query.message.chat.id
             customer_id = data_storage["reviews_data"][data_storage["reviews_index"]][5]
             Database.convert_profile(reviews[2],reviews[3],customer_id)
             order_id = Database.get_order_id(customer_id)

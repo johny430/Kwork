@@ -138,7 +138,7 @@ async def send_cost(message: types.Message, state: FSMContext):
     elif message.text.isdigit():
         async with state.proxy() as data_storage:
             data_storage['cost'] = message.text
-            await bot.send_message(message.chat.id, "Напишите ваше сопросводительное письмо:",
+            await bot.send_message(message.chat.id, "Напишите ваше техническое задание:",
                                    reply_markup=back_cancel_markup)
             await GetProfileForm.Order.set()
     else:
