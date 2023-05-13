@@ -87,6 +87,8 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
     async with state.proxy() as data_storage:
         index = data_storage["index"]
         data = data_storage["data"][index]
+        data_storage["executor_id"] = data[1]
+        data_storage["speciality"] = data[2]
         message_text = f'Специальность: {data[2]}\n Цена в час: {data[4]}\n Описание: {data[5]}\n'
         await callback_query.message.edit_text(text=message_text)
         await callback_query.message.answer(text="Каков срок исполнения заказа(в днях)?",
@@ -95,7 +97,7 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
 
 
 @dp.message_handler(state=GetProfileForm.ProfileSelect)
-async def order_place_name(message: types.Message, state: FSMContext):
+async def order_place_name(message: types.Message):
     if message.text == "Назад":
         await bot.send_message(message.chat.id, "Выберите категорию заказа: ", reply_markup=category_markup)
         await GetProfileForm.Category.set()
@@ -158,8 +160,11 @@ async def send_tz(message: types.Message, state: FSMContext):
             index = data_storage["data"][data_storage["index"]][0]
             cost = data_storage["cost"]
             deadline = data_storage["deadline"]
+            executor_id = data_storage["executor_id"]
+            speciality = data_storage["speciality"]
             Database.add_TZ(index, cost, deadline, TZ, message.from_user.id)
             await bot.send_message(message.chat.id,
                                    f'Ваше предложение успешно отправлено!\nСрок исполнения (в днях): {deadline} \nСтоимость заказа: {cost} USDT\nВаше предложение: {TZ}',
                                    reply_markup=customer_menu_markup)
+            await bot.send_message(chat_id=executor_id, text=f"На вашу анкету {speciality} появился отклик!")
             await state.finish()
