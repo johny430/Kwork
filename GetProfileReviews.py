@@ -2,9 +2,9 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, chat
 
-from InlineMarkups import Choose_Profile_Markup, Choose_Profile_Reviews_Markup, Choose_Tz_Markup
+from InlineMarkups import Choose_Profile_Markup, Choose_Tz_Markup
 from Markups import executor_menu_markup, back_cancel_markup
 from main import bot, Database, Chat, dp
 
@@ -16,7 +16,7 @@ class GetProfileReviewsForm(StatesGroup):
 
 
 # handler для создания заказа
-@dp.message_handler(Text(equals="Посмотреть отклики на анкету"))
+@dp.message_handler(Text(equals="Посмотреть отклики на анкету"), chat_type=[chat.ChatType.PRIVATE])
 async def order_place(message: types.Message, state: FSMContext):
     results = Database.get_profile_for(message.from_user.id)
     if len(results) == 0:
@@ -116,22 +116,22 @@ async def next_result(callback_query: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(Text(equals='confirm_tz'), state=GetProfileReviewsForm.ProfileReviewSelect)
 async def confirm_result_profile(callback_query: CallbackQuery, state: FSMContext):
-        await callback_query.answer()
-        async with state.proxy() as data_storage:
-            reviews = data_storage["reviews_data"][data_storage["reviews_index"]]
-            executor_id = callback_query.message.chat.id
-            customer_id = data_storage["reviews_data"][data_storage["reviews_index"]][5]
-            Database.convert_profile(reviews[2],reviews[3],customer_id)
-            order_id = Database.get_order_id(customer_id)
-            Database.convert_review(order_id, reviews[2],reviews[3],executor_id)
-            url, chat_id = await Chat.create_group_chat_with_link(f"Заказ номер {customer_id} : {executor_id}")
-            review_id = Database.get_review_id(order_id)
-            Database.add_review_group(chat_id, review_id)
-            await callback_query.message.answer(f'Для начала общения с заказчиком войдите в группу по ссылке:\n{url}',
-                                                reply_markup=executor_menu_markup)
-            await bot.send_message(chat_id=customer_id,
-                                   text=f"Ваш отклик понравился исполнителю!!!\nДля начала общения перейдите в группу по ссылке:\n{url}")
-            await state.finish()
+    await callback_query.answer()
+    async with state.proxy() as data_storage:
+        reviews = data_storage["reviews_data"][data_storage["reviews_index"]]
+        executor_id = callback_query.message.chat.id
+        customer_id = data_storage["reviews_data"][data_storage["reviews_index"]][5]
+        Database.convert_profile(reviews[2], reviews[3], customer_id)
+        order_id = Database.get_order_id(customer_id)
+        Database.convert_review(order_id, reviews[2], reviews[3], executor_id)
+        url, chat_id = await Chat.create_group_chat_with_link(f"Заказ номер {customer_id} : {executor_id}")
+        review_id = Database.get_review_id(order_id)
+        Database.add_review_group(chat_id, review_id)
+        await callback_query.message.answer(f'Для начала общения с заказчиком войдите в группу по ссылке:\n{url}',
+                                            reply_markup=executor_menu_markup)
+        await bot.send_message(chat_id=customer_id,
+                               text=f"Ваш отклик понравился исполнителю!!!\nДля начала общения перейдите в группу по ссылке:\n{url}")
+        await state.finish()
 
 
 @dp.message_handler(state=GetProfileReviewsForm.ProfileReviewSelect)
@@ -144,5 +144,3 @@ async def order_place_name(message: types.Message, state: FSMContext):
         await state.finish()
     else:
         await message.answer("Введите корректное число!:")
-
-

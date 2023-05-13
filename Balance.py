@@ -5,6 +5,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import StatesGroup, State
+from aiogram.types import chat
 
 from Markups import amount_balance, balance_markup, back_cancel_markup, customer_menu_markup
 from config import API_TOKEN
@@ -21,7 +22,7 @@ class BalanceForm(StatesGroup):
     Wallet = State()
 
 
-@dp.message_handler(Text(equals="Баланс"))
+@dp.message_handler(Text(equals="Баланс"), chat_type=[chat.ChatType.PRIVATE])
 async def check_balance(message: types.Message, state: FSMContext):
     async with state.proxy() as data_storage:
         money = Database.get_balance(user_id=message.from_user.id)

@@ -2,7 +2,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, chat
 
 from InlineMarkups import Choose_Profile_Markup
 from Markups import customer_menu_markup, back_cancel_markup, category_markup
@@ -19,7 +19,7 @@ class GetProfileForm(StatesGroup):
     Order = State()
 
 
-@dp.message_handler(Text(equals="Поиск исполнителей"))
+@dp.message_handler(Text(equals="Поиск исполнителей"), chat_type=[chat.ChatType.PRIVATE])
 async def category_profile(message: types.Message, state: FSMContext):
     await bot.send_message(message.chat.id, "Выберите категорию профиля: ", reply_markup=category_markup)
     await GetProfileForm.Category.set()

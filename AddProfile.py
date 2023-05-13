@@ -2,6 +2,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.types import chat
 
 from Markups import back_cancel_markup, executor_menu_markup, category_markup
 from main import bot, Database, dp
@@ -16,7 +17,7 @@ class ProfileForm(StatesGroup):
 
 
 # handler для создания профиля
-@dp.message_handler(Text(equals="Создать анкету"))
+@dp.message_handler(Text(equals="Создать анкету"), chat_type=[chat.ChatType.PRIVATE])
 async def profile(message: types.Message):
     await bot.send_message(message.chat.id, "Введите вашу специлизацию:", reply_markup=back_cancel_markup)
     await ProfileForm.Speciality.set()

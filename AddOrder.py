@@ -2,7 +2,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.types import ContentTypes
+from aiogram.types import ContentTypes, chat
 
 from Markups import back_cancel_markup, customer_menu_markup, category_markup, tz_markup
 from main import bot, Database, dp
@@ -19,7 +19,7 @@ class OrderForm(StatesGroup):
 
 
 # handler для создания заказа
-@dp.message_handler(Text(equals="Создать заказ"))
+@dp.message_handler(Text(equals="Создать заказ"), chat_type=[chat.ChatType.PRIVATE])
 async def order_place(message: types.Message):
     await bot.send_message(message.chat.id, "Введите название заказа:", reply_markup=back_cancel_markup)
     await OrderForm.Name.set()

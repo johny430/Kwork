@@ -2,6 +2,7 @@ import enum
 
 from aiogram import types
 from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.types import chat
 
 from Markups import customer_menu_markup
 from main import Database
@@ -21,7 +22,7 @@ class Executor(StatesGroup):
     BirthDate = State()
 
 
-@dp.message_handler(commands=['start'])
+@dp.message_handler(commands=['start'], chat_type=[chat.ChatType.PRIVATE])
 async def start(message: types.Message):
     if Database.user_exists(message.from_user.id):
         await bot.send_message(message.chat.id, "Выберите пункт меню", reply_markup=customer_menu_markup)

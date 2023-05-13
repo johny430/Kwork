@@ -13,7 +13,8 @@ class BotDB:
         return not bool(result.fetchone() is None)
 
     def get_order_id(self, customer_id):
-        result = self.cursor.execute("select id from orders where customer_id = (?) order by id desc limit 0,1", (customer_id,))
+        result = self.cursor.execute("select id from orders where customer_id = (?) order by id desc limit 0,1",
+                                     (customer_id,))
         return result.fetchone()[0]
 
     def get_balance(self, user_id):
@@ -189,24 +190,25 @@ class BotDB:
         return self.conn.commit()
 
     def convert_profile(self, order_price, order_deadline, customer_id):
-        self.cursor.execute("insert into orders (order_price, order_deadline, customer_id) values (?,?,?)",(order_price,order_deadline,customer_id))
+        self.cursor.execute("insert into orders (order_price, order_deadline, customer_id) values (?,?,?)",
+                            (order_price, order_deadline, customer_id))
         return self.conn.commit()
 
-    def convert_review(self,order_id, order_price, order_deadline, executor_id):
-        self.cursor.execute("insert into order_review (order_id, cost, dedline, executor_id) values (?,?,?,?)",(order_id, order_price,order_deadline,executor_id))
+    def convert_review(self, order_id, order_price, order_deadline, executor_id):
+        self.cursor.execute("insert into order_review (order_id, cost, dedline, executor_id) values (?,?,?,?)",
+                            (order_id, order_price, order_deadline, executor_id))
         return self.conn.commit()
 
-    def  get_review_id(self, order_id):
+    def get_review_id(self, order_id):
         results = self.cursor.execute(
             "SELECT id from order_review where order_id = (?)",
             (order_id,))
         return results.fetchone()[0]
 
-    def update_review_price(self,review_id,new_price):
+    def update_review_price(self, review_id, new_price):
         self.cursor.execute(f"update order_review set cost = {new_price} where id = {review_id}")
         return self.conn.commit()
 
-
-    def update_review_dedline(self,review_id,new_dedline):
+    def update_review_dedline(self, review_id, new_dedline):
         self.cursor.execute(f"update order_review set dedline = {new_dedline} where id = {review_id}")
         return self.conn.commit()

@@ -10,5 +10,5 @@ cloud_password = "9437"
 bot_username = "@FreeLanceHubb_bot"
 bot_id = 6128007771
 
-commision = 0.05
+commission = 0.05
 admin_chat_id = 6221033221

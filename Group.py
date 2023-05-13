@@ -13,7 +13,7 @@ async def confirm_order(customer_id, executor_id, group_id):
         customer_balance = Database.get_balance(customer_id)
         review = Database.get_review_by_group(group_id)
         group_review_id = Database.get_review_group_id(group_id)
-        price = review[3] * (1 + config.commision)
+        price = review[3] * (1 + config.commission)
         if price > customer_balance:
             await bot.send_message(group_id,
                                    f"У заказчика недостаточно средств!\nПополните баланс через бота и подтвердите заказ снова!\nТребуемая сумма {price} usdt!")
@@ -21,7 +21,7 @@ async def confirm_order(customer_id, executor_id, group_id):
         else:
             new_balance = customer_balance - price
             Database.update_balance(customer_id, new_balance)
-            Database.confirm_order_from_group(review[3],group_review_id[0])
+            Database.confirm_order_from_group(review[3], group_review_id[0])
             await bot.send_message(group_id,
                                    f"Заказ подтвержден!\nСрок выполнения(в днях): {review[2]}\nНаграда исполнителя {review[3]} usdt")
 
@@ -57,9 +57,12 @@ async def group_done_handler(message: types.Message):
             confirmed_order = Database.get_confirmed_order(group_id=message.chat.id)
             new_balance = confirmed_order[1] + Database.get_balance(executor_id)
             Database.update_balance(executor_id, new_balance)
-            Database.clear_by_group(message.chat.id, confirmed_order[0], Database.get_order_by_group_id(message.chat.id)[0])
+            Database.clear_by_group(message.chat.id, confirmed_order[0],
+                                    Database.get_order_by_group_id(message.chat.id)[0])
+            await bot.leave_chat(message.chat.id)
     else:
-        await message.answer("Заказ еще не подтвержден!\n Для подтверждения заказа исполнитель и закзачик должны воспользоваться командой /confirm")
+        await message.answer(
+            "Заказ еще не подтвержден!\n Для подтверждения заказа исполнитель и закзачик должны воспользоваться командой /confirm")
 
 
 @dp.message_handler(commands=['set_price'], chat_type=[types.ChatType.SUPERGROUP, types.ChatType.GROUP])
@@ -72,6 +75,7 @@ async def group_done_handler(message: types.Message):
     else:
         await message.answer("Введите команду в формате /set_price 1 , где 1 - новая цена")
 
+
 @dp.message_handler(commands=['set_deadline'], chat_type=[types.ChatType.SUPERGROUP, types.ChatType.GROUP])
 async def group_done_handler(message: types.Message):
     arguments = message.get_args()
@@ -81,6 +85,7 @@ async def group_done_handler(message: types.Message):
         await message.answer(f'Новый срок исполнения(в днях): {days}')
     else:
         await message.answer("Введите команду в формате /set_price 1 , где 1 - новая цена")
+
 
 @dp.message_handler(chat_type=[types.ChatType.SUPERGROUP, types.ChatType.GROUP])
 async def group_handler(message: types.Message):

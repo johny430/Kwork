@@ -2,7 +2,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, chat
 
 from InlineMarkups import Choose_Order_Markup
 from Markups import executor_menu_markup, back_cancel_markup, category_markup
@@ -19,7 +19,7 @@ class GetOrderForm(StatesGroup):
     Tz = State()
 
 
-@dp.message_handler(Text(equals="Поиск заказов"))
+@dp.message_handler(Text(equals="Поиск заказов"), chat_type=[chat.ChatType.PRIVATE])
 async def orders_category(message: types.Message):
     await bot.send_message(message.chat.id, "Выберите категорию заказа: ", reply_markup=category_markup)
     await GetOrderForm.Category.set()
@@ -166,5 +166,5 @@ async def send_CoverLatter(message: types.Message, state: FSMContext):
             await bot.send_message(message.chat.id,
                                    f'Ваш запрос успешно отправлен!\nВы выполните заказ за {deadline} дней\nНазначенная стоимость: {cost} USDT\nСопроводительное письмо: {CoverLatter}',
                                    reply_markup=executor_menu_markup)
-            await bot.send_message(chat_id=customer_id,text=f"На ваш заказ {name} появился новый отклик!")
+            await bot.send_message(chat_id=customer_id, text=f"На ваш заказ {name} появился новый отклик!")
             await state.finish()

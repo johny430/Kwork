@@ -2,7 +2,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, chat
 
 from InlineMarkups import Choose_Order_Markup
 from InlineMarkups import Choose_Reviews_Markup
@@ -20,7 +20,7 @@ class GetOrderReviewsForm(StatesGroup):
 
 
 # handler для создания заказа
-@dp.message_handler(Text(equals="Посмотреть отклики на заказ"))
+@dp.message_handler(Text(equals="Посмотреть отклики на заказ"), chat_type=[chat.ChatType.PRIVATE])
 async def order_place(message: types.Message, state: FSMContext):
     results = Database.get_orders_by_customer_id(message.from_user.id)
     if len(results) == 0:
@@ -108,7 +108,7 @@ async def next_result(callback_query: CallbackQuery, state: FSMContext):
     async with state.proxy() as data_storage:
         size = len(data_storage["reviews_data"])
         index = data_storage["reviews_index"]
-        if index == size - 1 :
+        if index == size - 1:
             return
         index += 1
         data_storage["reviews_index"] = index
