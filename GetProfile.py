@@ -20,7 +20,7 @@ class GetProfileForm(StatesGroup):
 
 
 @dp.message_handler(Text(equals="Поиск исполнителей"), chat_type=[chat.ChatType.PRIVATE])
-async def category_profile(message: types.Message, state: FSMContext):
+async def category_profile(message: types.Message):
     await bot.send_message(message.chat.id, "Выберите категорию профиля: ", reply_markup=category_markup)
     await GetProfileForm.Category.set()
 
@@ -46,7 +46,7 @@ async def search_profile(message: types.Message, state: FSMContext):
                 data_storage["message_id"] = message.message_id
             id = str(results[0][0])
             price = str(results[0][4])
-            message_text = f'{id}. Специальность: {results[0][2]}\n Цена в час: {price}\n Описание: {results[0][5]}\n'
+            message_text = f'{id}. Специальность: {results[0][2]}\n Цена в час: {price} USDT\n Описание: {results[0][5]}\n'
             await bot.send_message(message.chat.id, 'Список доступных исполнителей:', reply_markup=back_cancel_markup)
             await bot.send_message(message.chat.id, message_text, reply_markup=Choose_Profile_Markup)
             await GetProfileForm.ProfileSelect.set()
@@ -89,7 +89,7 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
         data = data_storage["data"][index]
         data_storage["executor_id"] = data[1]
         data_storage["speciality"] = data[2]
-        message_text = f'Специальность: {data[2]}\n Цена в час: {data[4]}\n Описание: {data[5]}\n'
+        message_text = f'Специальность: {data[2]}\n Цена в час: {data[4]} USDT\n Описание: {data[5]}\n'
         await callback_query.message.edit_text(text=message_text)
         await callback_query.message.answer(text="Каков срок исполнения заказа(в днях)?",
                                             reply_markup=back_cancel_markup)

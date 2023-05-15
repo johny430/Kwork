@@ -29,7 +29,7 @@ async def order_place(message: types.Message, state: FSMContext):
             data_storage["order_id"] = results[0][0]
         id = str(results[0][0])
         price = str(results[0][2])
-        message_text = f'{id}. {results[0][1]}\nЦена: {price}\nСрок выполнения: {results[0][7]} дней\nОписание: {results[0][4]}\n'
+        message_text = f'{id}. {results[0][1]}\nЦена: {price} USDT\nСрок выполнения (в днях): {results[0][7]} \nОписание: {results[0][4]}\n'
         await message.answer("Выберите заказ на который хотите посмотреть отклики:", reply_markup=back_cancel_remove_markup)
         await message.answer(message_text, reply_markup=Choose_Order_Markup)
         await GetOrderReviewsForm.ReviewSelect.set()
@@ -46,7 +46,7 @@ async def previous_result(callback_query: CallbackQuery, state: FSMContext):
         data_storage["order_index"] = index
         data = data_storage["order_data"][index]
         data_storage["order_id"] = data[0]
-        message_text = f'{data[0]}. {data[1]}\nЦена: {data[2]}\nСрок выполнения: {data[7]} дней\nОписание: {data[4]}\n'
+        message_text = f'{data[0]}. {data[1]}\nЦена: {data[2]} USDT\nСрок выполнения (в днях): {data[7]} \nОписание: {data[4]}\n'
         await callback_query.message.edit_text(text=message_text, reply_markup=Choose_Order_Markup)
 
 
@@ -62,7 +62,7 @@ async def next_result(callback_query: CallbackQuery, state: FSMContext):
         data_storage["order_index"] = index
         data = data_storage["order_data"][index]
         data_storage["order_id"] = data[0]
-        message_text = f'{data[0]}. {data[1]}\nЦена: {data[2]}\nСрок выполнения: {data[7]} дней\nОписание: {data[4]}\n'
+        message_text = f'{data[0]}. {data[1]}\nЦена: {data[2]} USDT\nСрок выполнения (в днях): {data[7]} \nОписание: {data[4]}\n'
         await callback_query.message.edit_text(text=message_text, reply_markup=Choose_Order_Markup)
 
 
@@ -84,7 +84,7 @@ async def confirm_result(callback_query: CallbackQuery, state: FSMContext):
             await callback_query.message.edit_reply_markup(reply_markup=None)
             await callback_query.message.answer('Выберите понравшийся отклик на зазказ')
             data_storage["order_id"] = data[0]
-            message_text_reviews = f'Номер: {reviews[0][0]}\nПредложенный срок: {reviews[0][2]} дня\nПредложенная сумма: {reviews[0][3]} USDT\nОписание: {reviews[0][4]}'
+            message_text_reviews = f'Номер: {reviews[0][0]}\nПредложенный срок (в днях): {reviews[0][2]}\nПредложенная сумма: {reviews[0][3]} USDT\nОписание: {reviews[0][4]}'
             await callback_query.message.answer(message_text_reviews, reply_markup=Choose_Reviews_Markup)
 
 
@@ -98,7 +98,7 @@ async def previous_result(callback_query: CallbackQuery, state: FSMContext):
         index -= 1
         data_storage["reviews_index"] = index
         reviews = data_storage["reviews_data"][index]
-        message_text_reviews = f'Номер: {reviews[0]}\nПредложенный срок: {reviews[2]} дня\nПредложенная сумма: {reviews[3]} USDT\nОписание: {reviews[4]}'
+        message_text_reviews = f'Номер: {reviews[0]}\nПредложенный срок (в днях): {reviews[2]} дня\nПредложенная сумма: {reviews[3]} USDT\nОписание: {reviews[4]}'
         await callback_query.message.edit_text(text=message_text_reviews, reply_markup=Choose_Reviews_Markup)
 
 
@@ -113,7 +113,7 @@ async def next_result(callback_query: CallbackQuery, state: FSMContext):
         index += 1
         data_storage["reviews_index"] = index
         reviews = data_storage["reviews_data"][index]
-        message_text_reviews = f'Номер: {reviews[0]}\nПредложенный срок: {reviews[2]} дня\nПредложенная сумма: {reviews[3]} USDT\nОписание: {reviews[4]}'
+        message_text_reviews = f'Номер: {reviews[0]}\nПредложенный срок(в днях): {reviews[2]}\nПредложенная сумма: {reviews[3]} USDT\nОписание: {reviews[4]}'
         await callback_query.message.edit_text(text=message_text_reviews, reply_markup=Choose_Reviews_Markup)
 
 

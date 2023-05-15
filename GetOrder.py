@@ -46,7 +46,7 @@ async def search_orders(message: types.Message, state: FSMContext):
                 data_storage["message_id"] = message.message_id
             id = str(results[0][0])
             price = str(results[0][2])
-            message_text = f'{id}. {results[0][1]}\nЦена: {price}\nСрок выполнения: {results[0][7]} дней\nОписание: {results[0][4]}\n'
+            message_text = f'{id}. {results[0][1]}\nЦена: {price} USDT\nСрок выполнения(в днях): {results[0][7]} \nОписание: {results[0][4]}\n'
             await bot.send_message(message.chat.id, "Список доступных Заказов:", reply_markup=back_cancel_markup)
             await bot.send_message(message.chat.id, message_text, reply_markup=Choose_Order_Markup)
             await GetOrderForm.OrderSelect.set()
